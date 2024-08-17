@@ -3,6 +3,8 @@ package app.Entity;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -34,9 +36,11 @@ public class Venda {
 	private String formaPagamento;
 	
 	@ManyToOne
+	@JsonIgnoreProperties("venda")
 	private Usuario usuario;
 	
 	@OneToMany(mappedBy = "venda")
+	@JsonIgnoreProperties("venda")
 	private List<Produto> produtosVenda;
 
 }

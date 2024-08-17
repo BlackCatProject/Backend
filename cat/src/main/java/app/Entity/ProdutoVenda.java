@@ -1,6 +1,6 @@
 package app.Entity;
 
-import java.util.List;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -26,8 +26,11 @@ public class ProdutoVenda {
 	private int quantidade;
 	
 	@ManyToOne
-	private List<Venda> vendas;
+	@JsonIgnoreProperties("produtosVenda")
+	private Venda vendas;
 	
 	@ManyToOne
-	private List<Produto> produtos;
+	@JsonIgnoreProperties("produtosVenda")
+
+	private Produto produtos;
 }
