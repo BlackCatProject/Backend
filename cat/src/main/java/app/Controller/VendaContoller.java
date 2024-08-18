@@ -13,10 +13,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import app.Entity.Usuario;
 import app.Entity.Venda;
-import app.Service.UsuarioService;
 import app.Service.VendaService;
 
 @RestController
