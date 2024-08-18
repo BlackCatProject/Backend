@@ -1,5 +1,6 @@
 package app.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
@@ -20,14 +21,15 @@ public class VendaService {
 	@Autowired 
 	private ProdutoService produtoService;
 	
-	public String save(Venda venda) {
-		venda = registrarVenda(venda);
+	public String save(Venda venda, int desconto) {
+		venda = registrarVenda(venda, desconto);
 		this.vendaRepository.save(venda);
 		return"Venda salva com sucesso";
 	}
 	
 	public String update(Venda venda, long id) {
 		venda.setId(id);
+		venda.setTotal(calcularTotal(venda));
 		this.vendaRepository.save(venda);
 		return  "Atualizada com sucesso";
 	}
@@ -49,10 +51,11 @@ public class VendaService {
 		return "Venda deletada com sucesso";
 	}
 	
-	private Venda registrarVenda(Venda venda) {
-		venda.setTotal(calcularTotal(venda));
+	private Venda registrarVenda(Venda venda, int desconto) {
+		double valorTotal = calcularTotal(venda) * (desconto / 100);
+		venda.setTotal(valorTotal);
 		venda.setNfe(gerarNfe());
-		
+		venda.setData(LocalDateTime.now());
 		
 		return venda;
 	}
@@ -62,14 +65,15 @@ public class VendaService {
 		double valorTotal = 0;
 
 		for (ProdutoVenda p : venda.getProdutosVenda()) {
-			if(p.getId() == 0) {
+			if(p.getProduto().getId() == 0) {
+				this.produtoService.save(p.getProduto());
 				valorTotal += p.getProduto().getPreco() * p.getQuantidade();
 			}else {
-				Produto produto = this.produtoService.findById(p.getId());
-				valorTotal += produto.getPreco();
+				Produto produto = this.produtoService.findById(p.getProduto().getId());
+				valorTotal += produto.getPreco() * p.getQuantidade();
 			}
 		}
-		return valorTotal;
+			return valorTotal;
 	}
 	
 	private long gerarNfe() {
@@ -77,14 +81,12 @@ public class VendaService {
 		Random random = new Random();
 		long numNfe;
 		boolean exists = false;
-		
 		do {
 			numNfe = random.nextInt(900000000) + 100000000;
 			exists = vendaRepository.existsByNfe(numNfe);
 		}while(exists);
 		
 		return numNfe;
-		
 	}
 	
 }

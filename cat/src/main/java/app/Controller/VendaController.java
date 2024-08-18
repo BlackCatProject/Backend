@@ -12,21 +12,22 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
 import app.Entity.Venda;
 import app.Service.VendaService;
 
 @RestController
-@RequestMapping("venda")
-public class VendaContoller {
+@RequestMapping("/venda")
+public class VendaController {
 	@Autowired
 	private VendaService vendaService ;
 	
-	
 	@PostMapping("/save")
-	public ResponseEntity<String> save(@RequestBody Venda venda ) {
+	public ResponseEntity<String> save(@RequestBody Venda venda, @RequestParam int desconto) {
 	    try {
-	        String msn = this.vendaService.save(venda);
+	        String msn = this.vendaService.save(venda, desconto);
 	        return new ResponseEntity<>(msn, HttpStatus.OK);
 	    } catch (Exception e) {
 	        return new ResponseEntity<>("Deu Erro! " + e.getMessage(), HttpStatus.BAD_REQUEST);
