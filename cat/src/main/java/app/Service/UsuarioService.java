@@ -14,18 +14,18 @@ public class UsuarioService {
 	@Autowired
 	private UsuarioRepository usuarioRepository;
 	
-	private String save(Usuario usuario) {
+	public String save(Usuario usuario) {
 		this.usuarioRepository.save(usuario);
 		return"Usuario salvo com sucesso";
 	}
 	
-	private String update(Usuario usuario, long id) {
+	public String update(Usuario usuario, long id) {
 		usuario.setId(id);
 		this.usuarioRepository.save(usuario);
 		return  "Atualizado com sucesso";
 	}
 	
-	private Usuario findById(long id) {
+	public Usuario findById(long id) {
 		Optional<Usuario> optional = this.usuarioRepository.findById(id);
 		if(optional.isPresent()) {
 			return optional.get();
@@ -33,11 +33,11 @@ public class UsuarioService {
 			return null;
 	}
 		
-	private List<Usuario> findAll(){
+	public List<Usuario> findAll(){
 		return this.usuarioRepository.findAll();
 	}
 	
-	private String delete(Long id) {
+	public String delete(Long id) {
 		this.usuarioRepository.deleteById(id);
 		return "Usuario deletado com sucesso";
 	}

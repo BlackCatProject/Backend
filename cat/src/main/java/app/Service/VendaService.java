@@ -16,18 +16,18 @@ public class VendaService {
 	@Autowired
 	private VendaRepository vendaRepository;
 	
-	private String save(Venda venda) {
+	public String save(Venda venda) {
 		this.vendaRepository.save(venda);
 		return"Usuario salvo com sucesso";
 	}
 	
-	private String update(Venda venda, long id) {
+	public String update(Venda venda, long id) {
 		venda.setId(id);
 		this.vendaRepository.save(venda);
 		return  "Atualizado com sucesso";
 	}
 	
-	private Venda findById(long id) {
+	public Venda findById(long id) {
 		Optional<Venda> optional = this.vendaRepository.findById(id);
 		if(optional.isPresent()) {
 			return optional.get();
@@ -35,11 +35,11 @@ public class VendaService {
 			return null;
 	}
 		
-	private List<Venda> findAll(){
+	public List<Venda> findAll(){
 		return this.vendaRepository.findAll();
 	}
 	
-	private String delete(Long id) {
+	public String delete(Long id) {
 		this.vendaRepository.deleteById(id);
 		return "Venda deletada com sucesso";
 	}
