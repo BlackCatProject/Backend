@@ -27,10 +27,10 @@ public class ProdutoVenda {
 	
 	@ManyToOne
 	@JsonIgnoreProperties("produtosVenda")
-	private Venda vendas;
+	private Venda venda;
 	
 	@ManyToOne
 	@JsonIgnoreProperties("produtosVenda")
 
-	private Produto produtos;
+	private Produto produto;
 }
