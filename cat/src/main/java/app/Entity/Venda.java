@@ -36,11 +36,10 @@ public class Venda {
 	private String formaPagamento;
 	
 	@ManyToOne
-	@JsonIgnoreProperties("venda")
+	@JsonIgnoreProperties("vendas")
 	private Usuario usuario;
 	
 	@OneToMany(mappedBy = "venda")
 	@JsonIgnoreProperties("venda")
-	private List<Produto> produtosVenda;
-
+	private List<ProdutoVenda> produtosVenda;
 }
