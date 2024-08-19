@@ -45,5 +45,5 @@ public class Venda {
 	@OneToMany(mappedBy = "venda", cascade = CascadeType.ALL)
 	@JsonIgnoreProperties("venda")
 	private List<ProdutoVenda> produtosVenda;
-
+ 
 }

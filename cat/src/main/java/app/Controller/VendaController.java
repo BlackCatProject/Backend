@@ -19,7 +19,7 @@ import app.Entity.Venda;
 import app.Service.VendaService;
 
 @RestController
-@RequestMapping("/venda")
+@RequestMapping("api/venda")
 public class VendaController {
 	@Autowired
 	private VendaService vendaService ;
@@ -44,10 +44,10 @@ public class VendaController {
 	        }
 	    }
 	 
-	 @GetMapping("/findById/{index}")
-	 public ResponseEntity<Venda> findById(@PathVariable int index) {
+	 @GetMapping("/findById/{id}")
+	 public ResponseEntity<Venda> findById(@PathVariable int id) {
 	     try {
-	    	 Venda  funcionario = this.vendaService.findById(index);
+	    	 Venda  funcionario = this.vendaService.findById(id);
 	         return new ResponseEntity<>(funcionario, HttpStatus.OK);
 	     } catch (Exception e) {
 	         return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);

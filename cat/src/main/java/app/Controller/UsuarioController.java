@@ -18,7 +18,7 @@ import app.Entity.Usuario;
 import app.Service.UsuarioService;
 
 @RestController
-@RequestMapping("/usuario")
+@RequestMapping("api/usuario")
 public class UsuarioController {
 	@Autowired
 	private UsuarioService usuarioServise;
@@ -44,15 +44,16 @@ public class UsuarioController {
 	        }
 	    }
 	 
-	 @GetMapping("/findById/{index}")
-		public ResponseEntity<Usuario> findById(@PathVariable int index) {
-			try {
-				Usuario funcionario = this.usuarioServise.findById(index);
-				return new ResponseEntity<>(funcionario, HttpStatus.OK);
-			} catch (Exception e) {
-				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-			}
-		}
+	 @GetMapping("/findById/{id}")
+	 public ResponseEntity<Usuario> findById(@PathVariable long id) {
+	     try {
+	         Usuario usuario = this.usuarioServise.findById(id);
+	         return new ResponseEntity<>(usuario, HttpStatus.OK);
+	     } catch (Exception e) {
+	         return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+	     }
+	 }
+
 
 		@GetMapping("/findAll")
 		public ResponseEntity<List<Usuario>> findAll() {
