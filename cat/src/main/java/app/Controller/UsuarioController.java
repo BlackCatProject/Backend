@@ -25,20 +25,22 @@ public class UsuarioController {
 	@Autowired
 	private UsuarioService usuarioService;
 
-	@PostMapping("/save")
-	public ResponseEntity<String> save(@RequestBody @Valid Usuario usuario) {
-	    try {
-	        String message = usuarioService.save(usuario);
-	        // Verificar se a mensagem de sucesso foi retornada
-	        return new ResponseEntity<>(message, HttpStatus.CREATED); // Use CREATED para indicar sucesso na criação
-	    } catch (Exception e) {
-	        // Tratar exceções gerais
-	        return new ResponseEntity<>("Erro: " + e.getMessage(), HttpStatus.BAD_REQUEST);
+	 @PostMapping("/save")
+	    public ResponseEntity<String> save(@RequestBody Usuario usuario) {
+	        try {
+	            String message = this.usuarioService.save(usuario);
+	            if (message.contains("salvo")) {
+	                return new ResponseEntity<>(message, HttpStatus.OK);
+	            } else {
+	                return new ResponseEntity<>(message, HttpStatus.BAD_REQUEST);
+	            }
+	        } catch (Exception e) {
+	            return new ResponseEntity<>("Erro: " + e.getMessage(), HttpStatus.BAD_REQUEST);
+	        }
 	    }
-	}
 
 	@PutMapping("/update/{id}")
-	public ResponseEntity<String> update(@RequestBody @Valid Usuario usuario, @PathVariable Long id) {
+	public ResponseEntity<String> update(@RequestBody Usuario usuario, @PathVariable Long id) {
 		try {
 			String msn = this.usuarioService.update(usuario, id);
 			return new ResponseEntity<>(msn, HttpStatus.OK);

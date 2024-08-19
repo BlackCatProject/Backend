@@ -15,7 +15,6 @@ public class UsuarioService {
 	private UsuarioRepository usuarioRepository;
 	
 	public String save(Usuario usuario) {
-		 // Verificar se o login já existe
         Optional<Usuario> existingUser = usuarioRepository.findByLogin(usuario.getLogin());
         if (existingUser.isPresent()) {
             return "Login já está em uso";

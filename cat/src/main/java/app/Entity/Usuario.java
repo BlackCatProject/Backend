@@ -13,6 +13,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -41,7 +42,7 @@ public class Usuario {
     @Size(min = 8, message = "A senha deve ter no minimo 8 caracteres")
     private String senha;
        
-    @NotBlank(message = "O cargo é obrigatorio")
+    @NotNull(message = "O tipo de usuaio é obrigatorio")
     @Enumerated(EnumType.STRING)
     private Role role;
     
