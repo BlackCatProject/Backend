@@ -15,11 +15,16 @@ public class ProdutoService {
 	@Autowired
 	private ProdutoRepository produtoRepository;
 	
-	public String save( Produto produto) {
-		this.produtoRepository.save(produto);
-		return "Produto salvo com sucesso";
-	}
-	
+	public String save(Produto produto) {
+        // Verificar se o produto com o mesmo nome e descrição já existe
+        if (produtoRepository.existsByNomeAndDescricao(produto.getNome(), produto.getDescricao())) {
+            return "Produto com o mesmo nome e descrição já existe";
+        }
+
+        // Salvar o novo produto
+        this.produtoRepository.save(produto);
+        return "Produto salvo com sucesso";
+    }
 	public String update(Produto produto, long id) {
 		produto.setId(id);
 		this.produtoRepository.save(produto);

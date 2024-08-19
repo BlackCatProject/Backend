@@ -24,15 +24,19 @@ public class ProdutoController {
 	private ProdutoService produtoService  ;
 	
 	
-	@PostMapping("/save")
-	public ResponseEntity<String> save(@RequestBody Produto produto  ) {
-	    try {
-	        String msn = this.produtoService.save(produto);
-	        return new ResponseEntity<>(msn, HttpStatus.OK);
-	    } catch (Exception e) {
-	        return new ResponseEntity<>("Deu Erro! " + e.getMessage(), HttpStatus.BAD_REQUEST);
+	  @PostMapping("/save")
+	    public ResponseEntity<String> save(@RequestBody Produto produto) {
+	        try {
+	            String message = this.produtoService.save(produto);
+	            if (message.contains("salvo")) {
+	                return new ResponseEntity<>(message, HttpStatus.OK);
+	            } else {
+	                return new ResponseEntity<>(message, HttpStatus.BAD_REQUEST);
+	            }
+	        } catch (Exception e) {
+	            return new ResponseEntity<>("Erro: " + e.getMessage(), HttpStatus.BAD_REQUEST);
+	        }
 	    }
-	}
 	
 	 @PutMapping("/update/{id}")
 	    public ResponseEntity<String> update(@RequestBody Produto produto, @PathVariable Long id) {
