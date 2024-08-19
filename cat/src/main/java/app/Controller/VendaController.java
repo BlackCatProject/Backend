@@ -1,5 +1,6 @@
 package app.Controller;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,5 +74,29 @@ public class VendaController {
 		        return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		    }
 
-}
+		}
+		//exemplo pra buscar -> api/venda/findByDataBetween?startDate=2024-08-18T00:00:00&endDate=2024-08-18T23:59:59
+		 @GetMapping("/findByData")
+		    public ResponseEntity<List<Venda>> findByDataBetween(
+		            @RequestParam("startDate") String startDateStr,
+		            @RequestParam("endDate") String endDateStr) {
+		        try {
+		            LocalDateTime startDate = LocalDateTime.parse(startDateStr);
+		            LocalDateTime endDate = LocalDateTime.parse(endDateStr);
+		            List<Venda> vendas = this.vendaService.findByData(startDate, endDate);
+		            return new ResponseEntity<>(vendas, HttpStatus.OK);
+		        } catch (Exception e) {
+		            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		        }
+		    }
+		//exemplo pra buscar ->  api/venda/findByMonth/2024/08
+		 @GetMapping("/findByMonth/{ano}/{mes}")
+		    public ResponseEntity<List<Venda>> findByMonthAndYear(@PathVariable int ano, @PathVariable int mes) {
+		        try {
+		            List<Venda> vendas = vendaService.findByMonthAndYear(mes, ano);
+		            return new ResponseEntity<>(vendas, HttpStatus.OK);
+		        } catch (Exception e) {
+		            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		        }
+		    }
 }

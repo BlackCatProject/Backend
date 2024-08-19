@@ -1,7 +1,7 @@
 package app.Service;
 
 import java.time.LocalDateTime;
-import java.time.temporal.TemporalAdjusters;
+import java.time.YearMonth;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
@@ -90,4 +90,16 @@ public class VendaService {
 		return numNfe;
 	}
 	
+	  public List<Venda> findByData(LocalDateTime startDate, LocalDateTime endDate) {
+	        return this.vendaRepository.findByDataBetween(startDate, endDate);
+	    }
+	  
+	  public List<Venda> findByMonthAndYear(int mes, int ano) {
+	        // Definindo o primeiro e o último dia do mês
+	        YearMonth yearMonth = YearMonth.of(ano, mes);
+	        LocalDateTime startDate = yearMonth.atDay(1).atStartOfDay();
+	        LocalDateTime endDate = yearMonth.atEndOfMonth().atTime(23, 59, 59);
+
+	        return vendaRepository.findByDataBetween(startDate, endDate);
+	    }
 }
