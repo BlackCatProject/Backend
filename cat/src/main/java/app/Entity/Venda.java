@@ -4,7 +4,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -39,8 +41,9 @@ public class Venda {
 	@JsonIgnoreProperties("venda")
 	private Usuario usuario;
 	
-	@OneToMany(mappedBy = "venda")
+	@JsonManagedReference
+	@OneToMany(mappedBy = "venda", cascade = CascadeType.ALL)
 	@JsonIgnoreProperties("venda")
 	private List<ProdutoVenda> produtosVenda;
-
+ 
 }

@@ -19,7 +19,7 @@ import app.Service.ProdutoService;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/produto")
+@RequestMapping("api/produto")
 public class ProdutoController {
 	@Autowired
 	private ProdutoService produtoService  ;
@@ -48,7 +48,7 @@ public class ProdutoController {
 	 @GetMapping("/findById/{id}")
 	 public ResponseEntity<Produto> findById(@PathVariable int index) {
 	     try {
-	    	 Produto  funcionario = this.produtoService.findById(index);
+	    	 Produto  funcionario = this.produtoService.findById(id);
 	         return new ResponseEntity<>(funcionario, HttpStatus.OK);
 	     } catch (Exception e) {
 	         return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);

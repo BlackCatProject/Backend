@@ -19,7 +19,7 @@ import app.Service.UsuarioService;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/usuario")
+@RequestMapping("api/usuario")
 public class UsuarioController {
 	
 	@Autowired
@@ -33,7 +33,6 @@ public class UsuarioController {
 	    } catch (Exception e) {
 	        return new ResponseEntity<>("Erro ao salvar usuário! " + e.getMessage(), HttpStatus.BAD_REQUEST);
 	    }
-	}
 	
 	 @PutMapping("/update/{id}")
 	    public ResponseEntity<String> update(@RequestBody @Valid Usuario usuario, @PathVariable Long id) {
