@@ -15,8 +15,13 @@ public class UsuarioService {
 	private UsuarioRepository usuarioRepository;
 	
 	public String save(Usuario usuario) {
-		this.usuarioRepository.save(usuario);
-		return"Usuario salvo com sucesso";
+		 // Verificar se o login já existe
+        Optional<Usuario> existingUser = usuarioRepository.findByLogin(usuario.getLogin());
+        if (existingUser.isPresent()) {
+            return "Login já está em uso";
+        }
+        this.usuarioRepository.save(usuario);
+        return "Usuário salvo com sucesso";
 	}
 	
 	public String update(Usuario usuario, long id) {
