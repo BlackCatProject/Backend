@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import app.Entity.Produto;
 import app.Service.ProdutoService;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/produto")
@@ -25,17 +26,17 @@ public class ProdutoController {
 	
 	
 	@PostMapping("/save")
-	public ResponseEntity<String> save(@RequestBody Produto produto  ) {
+	public ResponseEntity<String> save(@RequestBody @Valid Produto produto  ) {
 	    try {
 	        String msn = this.produtoService.save(produto);
-	        return new ResponseEntity<>(msn, HttpStatus.OK);
+	        return new ResponseEntity<>(msn, HttpStatus.CREATED);
 	    } catch (Exception e) {
-	        return new ResponseEntity<>("Deu Erro! " + e.getMessage(), HttpStatus.BAD_REQUEST);
+	        return new ResponseEntity<>("Erro ao salvar produto!" + e.getMessage(), HttpStatus.BAD_REQUEST);
 	    }
 	}
 	
 	 @PutMapping("/update/{id}")
-	    public ResponseEntity<String> update(@RequestBody Produto produto, @PathVariable Long id) {
+	    public ResponseEntity<String> update(@RequestBody @Valid Produto produto, @PathVariable Long id) {
 	        try {
 	            String msn = this.produtoService.update(produto, id);
 	            return new ResponseEntity<>(msn, HttpStatus.OK);
@@ -44,13 +45,13 @@ public class ProdutoController {
 	        }
 	    }
 	 
-	 @GetMapping("/findById/{index}")
+	 @GetMapping("/findById/{id}")
 	 public ResponseEntity<Produto> findById(@PathVariable int index) {
 	     try {
 	    	 Produto  funcionario = this.produtoService.findById(index);
 	         return new ResponseEntity<>(funcionario, HttpStatus.OK);
 	     } catch (Exception e) {
-	         return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+	         return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
 	     }
 	 }
 
@@ -60,7 +61,7 @@ public class ProdutoController {
 				List<Produto> lista = this.produtoService.findAll();
 				return new ResponseEntity<>(lista, HttpStatus.OK);
 			} catch (Exception e) {
-				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+				return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
 			}
 		}
 
