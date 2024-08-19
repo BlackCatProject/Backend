@@ -21,57 +21,60 @@ import jakarta.validation.Valid;
 @RestController
 @RequestMapping("api/usuario")
 public class UsuarioController {
-	
+
 	@Autowired
 	private UsuarioService usuarioService;
-	
+
 	@PostMapping("/save")
 	public ResponseEntity<String> save(@RequestBody @Valid Usuario usuario) {
 	    try {
-	        String msn = this.usuarioService.save(usuario);
-	        return new ResponseEntity<>(msn, HttpStatus.OK);
+	        String message = usuarioService.save(usuario);
+	        // Verificar se a mensagem de sucesso foi retornada
+	        return new ResponseEntity<>(message, HttpStatus.CREATED); // Use CREATED para indicar sucesso na criação
 	    } catch (Exception e) {
-	        return new ResponseEntity<>("Erro ao salvar usuário! " + e.getMessage(), HttpStatus.BAD_REQUEST);
+	        // Tratar exceções gerais
+	        return new ResponseEntity<>("Erro: " + e.getMessage(), HttpStatus.BAD_REQUEST);
 	    }
-	
-	 @PutMapping("/update/{id}")
-	    public ResponseEntity<String> update(@RequestBody @Valid Usuario usuario, @PathVariable Long id) {
-	        try {
-	            String msn = this.usuarioService.update(usuario, id);
-	            return new ResponseEntity<>(msn, HttpStatus.OK);
-	        } catch (Exception e) {
-	            return new ResponseEntity<>("Erro ao atualizar usuário! " + e.getMessage(), HttpStatus.BAD_REQUEST);
-	        }
-	    }
-	 
-	 @GetMapping("/findByIndex/{index}")
-		public ResponseEntity<Usuario> findByIndex(@PathVariable long index) {
-			try {
-				Usuario funcionario = this.usuarioService.findById(index);
-				return new ResponseEntity<>(funcionario, HttpStatus.OK);
-			} catch (Exception e) {
-				return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-			}
-		}
+	}
 
-		@GetMapping("/findAll")
-		public ResponseEntity<List<Usuario>> findAll() {
-			try {
-				List<Usuario> lista = this.usuarioService.findAll();
-				return new ResponseEntity<>(lista, HttpStatus.OK);
-			} catch (Exception e) {
-				return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-			}
+	@PutMapping("/update/{id}")
+	public ResponseEntity<String> update(@RequestBody @Valid Usuario usuario, @PathVariable Long id) {
+		try {
+			String msn = this.usuarioService.update(usuario, id);
+			return new ResponseEntity<>(msn, HttpStatus.OK);
+		} catch (Exception e) {
+			return new ResponseEntity<>("Erro ao atualizar usuário! " + e.getMessage(), HttpStatus.BAD_REQUEST);
 		}
+	}
 
-		@DeleteMapping("/delete/{id}")
-		public ResponseEntity<String> delete(@PathVariable Long id) {
-		    try {
-		        String msn = this.usuarioService.delete(id);
-		        return new ResponseEntity<>(msn, HttpStatus.OK);
-		    } catch (Exception e) {
-		        return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-		    }
+	@GetMapping("/findByIndex/{index}")
+	public ResponseEntity<Usuario> findByIndex(@PathVariable long index) {
+		try {
+			Usuario funcionario = this.usuarioService.findById(index);
+			return new ResponseEntity<>(funcionario, HttpStatus.OK);
+		} catch (Exception e) {
+			return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
 		}
-	
+	}
+
+	@GetMapping("/findAll")
+	public ResponseEntity<List<Usuario>> findAll() {
+		try {
+			List<Usuario> lista = this.usuarioService.findAll();
+			return new ResponseEntity<>(lista, HttpStatus.OK);
+		} catch (Exception e) {
+			return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+		}
+	}
+
+	@DeleteMapping("/delete/{id}")
+	public ResponseEntity<String> delete(@PathVariable Long id) {
+		try {
+			String msn = this.usuarioService.delete(id);
+			return new ResponseEntity<>(msn, HttpStatus.OK);
+		} catch (Exception e) {
+			return new ResponseEntity<>("Erro ao deletar Usuario!", HttpStatus.BAD_REQUEST);
+		}
+	}
+
 }
