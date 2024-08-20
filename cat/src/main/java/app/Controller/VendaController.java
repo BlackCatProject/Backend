@@ -20,7 +20,7 @@ import app.Entity.Venda;
 import app.Service.VendaService;
 
 @RestController
-@RequestMapping("api/venda")
+@RequestMapping("/api/venda")
 public class VendaController {
 	@Autowired
 	private VendaService vendaService ;

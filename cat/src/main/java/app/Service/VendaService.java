@@ -86,9 +86,9 @@ public class VendaService {
 		}
 		
 		if(venda.getDesconto() == 0) {
-;			return valorTotal;
+			return valorTotal;
 		}else {
-			return valorTotal * (venda.getDesconto() / 100);
+			return valorTotal * (1 - (venda.getDesconto() / 100.0));
 		}
 	}
 	
