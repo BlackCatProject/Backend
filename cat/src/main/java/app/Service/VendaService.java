@@ -117,4 +117,10 @@ public class VendaService {
 
 	        return vendaRepository.findByDataBetween(startDate, endDate);
 	    }
+	 
+	  
+	  public List<Venda> findByUsuarioId(long usuarioId) {
+	        return vendaRepository.findByUsuarioId(usuarioId);
+	    }
+	  
 }

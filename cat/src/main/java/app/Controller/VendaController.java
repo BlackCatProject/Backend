@@ -99,4 +99,19 @@ public class VendaController {
 		            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		        }
 		    }
+		  @GetMapping("/findByUsuario/{usuarioId}")
+		    public ResponseEntity<List<Venda>> findByUsuarioId(@PathVariable("usuarioId") long usuarioId) {
+		        try {
+		            List<Venda> vendas = vendaService.findByUsuarioId(usuarioId);
+		            if (vendas.isEmpty()) {
+		                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+		            }
+		            return new ResponseEntity<>(vendas, HttpStatus.OK);
+		        } catch (Exception e) {
+		            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+		        }
+		    }
+
+
+		 
 }
