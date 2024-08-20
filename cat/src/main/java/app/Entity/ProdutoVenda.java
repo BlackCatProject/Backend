@@ -1,6 +1,5 @@
 package app.Entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.Entity;
@@ -26,7 +25,6 @@ public class ProdutoVenda {
 	
 	private int quantidade;
 	
-	@JsonBackReference
 	@ManyToOne
 	@JsonIgnoreProperties("produtosVenda")
 	private Venda venda;

@@ -35,6 +35,8 @@ public class Venda {
 	
 	private LocalDateTime data;
 	
+	private int desconto;
+	
 	private long nfe;
 
 	@NotNull(message = "A forma de pagamento é obrigatória") //mudei aqui kaila

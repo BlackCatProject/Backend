@@ -26,9 +26,9 @@ public class VendaController {
 	private VendaService vendaService ;
 	
 	@PostMapping("/save")
-	public ResponseEntity<String> save(@RequestBody Venda venda, @RequestParam int desconto) {
+	public ResponseEntity<String> save(@RequestBody Venda venda) {
 	    try {
-	        String msn = this.vendaService.save(venda, desconto);
+	        String msn = this.vendaService.save(venda);
 	        return new ResponseEntity<>(msn, HttpStatus.OK);
 	    } catch (Exception e) {
 	        return new ResponseEntity<>("Deu Erro! " + e.getMessage(), HttpStatus.BAD_REQUEST);

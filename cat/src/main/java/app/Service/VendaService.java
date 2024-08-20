@@ -2,6 +2,7 @@ package app.Service;
 
 import java.time.LocalDateTime;
 import java.time.YearMonth;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
@@ -22,8 +23,16 @@ public class VendaService {
 	@Autowired 
 	private ProdutoService produtoService;
 	
-	public String save(Venda venda, int desconto) {
-		venda = registrarVenda(venda, desconto);
+	public String save(Venda venda) {
+		venda = registrarVenda(venda);
+		
+		//toda vez que tiver um relacionamento @onetomany e que vc salva em cascata, precisa fazer isso pra não ficar nual a chave estrangeira da venda no produto venda
+		if(venda.getProdutosVenda() != null) {
+			for(int i=0; i<venda.getProdutosVenda().size(); i++) {
+				venda.getProdutosVenda().get(i).setVenda(venda);
+			}
+		}
+		
 		this.vendaRepository.save(venda);
 		return"Venda salva com sucesso";
 	}
@@ -52,8 +61,9 @@ public class VendaService {
 		return "Venda deletada com sucesso";
 	}
 	
-	private Venda registrarVenda(Venda venda, int desconto) {
-		double valorTotal = calcularTotal(venda) * (desconto / 100);
+	private Venda registrarVenda(Venda venda) {
+		
+		double valorTotal = calcularTotal(venda);
 		venda.setTotal(valorTotal);
 		venda.setNfe(gerarNfe());
 		venda.setData(LocalDateTime.now());
@@ -74,7 +84,12 @@ public class VendaService {
 				valorTotal += produto.getPreco() * p.getQuantidade();
 			}
 		}
-			return valorTotal;
+		
+		if(venda.getDesconto() == 0) {
+;			return valorTotal;
+		}else {
+			return valorTotal * (venda.getDesconto() / 100);
+		}
 	}
 	
 	private long gerarNfe() {
