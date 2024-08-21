@@ -49,10 +49,10 @@ public class UsuarioController {
 		}
 	}
 
-	@GetMapping("/findByIndex/{index}")
-	public ResponseEntity<Usuario> findByIndex(@PathVariable long index) {
+	@GetMapping("/findById/{id}")
+	public ResponseEntity<Usuario> findByIndex(@PathVariable long id) {
 		try {
-			Usuario funcionario = this.usuarioService.findById(index);
+			Usuario funcionario = this.usuarioService.findById(id);
 			return new ResponseEntity<>(funcionario, HttpStatus.OK);
 		} catch (Exception e) {
 			return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);

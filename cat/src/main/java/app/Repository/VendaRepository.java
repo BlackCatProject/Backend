@@ -2,6 +2,7 @@ package app.Repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -12,4 +13,5 @@ public interface VendaRepository extends JpaRepository<Venda, Long >{
 	public Boolean existsByNfe(long numNfe);
 	
 	  List<Venda> findByUsuarioId(long usuarioId);
+	  Optional<Venda> findByNfe(long nfe);
 }

@@ -5,6 +5,7 @@ import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Random;
 
@@ -161,5 +162,10 @@ public class VendaService {
 	public List<Venda> findByUsuarioId(long usuarioId) {
 		return vendaRepository.findByUsuarioId(usuarioId);
 	}
+
+    public Venda buscarPorNumeroNfe(long numeroNfe) {
+        return vendaRepository.findByNfe(numeroNfe)
+                .orElseThrow(() -> new NoSuchElementException("Venda não encontrada com o número da NFe: " + numeroNfe));
+    }
 
 }
