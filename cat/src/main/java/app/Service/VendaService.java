@@ -79,6 +79,7 @@ public class VendaService {
 
 		Venda vendaInDb = findById(id);
 
+		venda.setId(id);
 		venda.setProdutosVenda(this.verificarProdutos(venda.getProdutosVenda()));
 		venda.setData(vendaInDb.getData());
 		venda.setNfe(vendaInDb.getNfe());

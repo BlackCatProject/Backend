@@ -39,7 +39,7 @@ public class Venda {
 	
 	private long nfe;
 
-	@NotNull(message = "A forma de pagamento é obrigatória") //mudei aqui kaila
+	@NotBlank(message = "A forma de pagamento é obrigatória") //mudei aqui kaila
 	private String formaPagamento;
 	
 	@ManyToOne
