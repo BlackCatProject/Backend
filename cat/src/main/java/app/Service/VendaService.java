@@ -2,6 +2,7 @@ package app.Service;
 
 import java.time.LocalDateTime;
 import java.time.YearMonth;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
@@ -63,6 +64,24 @@ public class VendaService {
 	
 	private Venda registrarVenda(Venda venda) {
 		
+		List<ProdutoVenda> listTemp = new ArrayList<>();
+		
+		//Caso um produto esteja presente em mais de um produtoVenda, junta as quantidades de em um só produtoVenda na lista temporária
+		for(int i = 0; i < venda.getProdutosVenda().size(); i++) {
+			boolean encontrou = false;
+			for(int j = 0; j < listTemp.size(); j++) {
+				if(venda.getProdutosVenda().get(i).getProduto().getId() == listTemp.get(j).getProduto().getId()) {
+					encontrou = true;
+					listTemp.get(j).setQuantidade(listTemp.get(j).getQuantidade() + venda.getProdutosVenda().get(i).getQuantidade());
+				}
+			}
+			
+			if(!encontrou) {
+				listTemp.add(venda.getProdutosVenda().get(i));
+			}
+		}
+		
+		venda.setProdutosVenda(listTemp);
 		double valorTotal = calcularTotal(venda);
 		venda.setTotal(valorTotal);
 		venda.setNfe(gerarNfe());
