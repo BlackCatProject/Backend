@@ -39,12 +39,12 @@ public class Venda {
 	
 	private long nfe;
 
-	@NotBlank(message = "A forma de pagamento é obrigatória") //mudei aqui kaila
+	@NotBlank(message = "A forma de pagamento é obrigatória") 
 	private String formaPagamento;
 	
 	@ManyToOne
 	@JsonIgnoreProperties("venda")
-	@NotNull(message = "O nome não pode ser nulo, vazio ou apenas espaços em branco") //mudei aqui Kaila
+	@NotNull(message = "O nome não pode ser nulo, vazio ou apenas espaços em branco") 
 	private Usuario usuario;
 
 	@OneToMany(mappedBy = "venda", cascade = CascadeType.ALL)
