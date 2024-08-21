@@ -75,7 +75,7 @@ public class VendaController {
 		    }
 
 		}
-		//exemplo pra buscar -> api/venda/findByDataBetween?startDate=2024-08-18T00:00:00&endDate=2024-08-18T23:59:59
+		//exemplo pra buscar -> api/venda/findByData?startDate=2024-08-18T00:00:00&endDate=2024-08-18T23:59:59
 		 @GetMapping("/findByData")
 		    public ResponseEntity<List<Venda>> findByDataBetween(
 		            @RequestParam("startDate") String startDateStr,
@@ -110,6 +110,13 @@ public class VendaController {
 		        } catch (Exception e) {
 		            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
 		        }
+		    }
+		  
+
+		    @GetMapping("/buscar-por-nfe")
+		    public ResponseEntity<Venda> buscarPorNumeroNfe(@RequestParam long nfe) {
+		        Venda venda = vendaService.buscarPorNumeroNfe(nfe);
+		        return ResponseEntity.ok(venda);
 		    }
 
 
