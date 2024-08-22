@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import app.Entity.Produto;
 import app.Entity.Usuario;
 import app.Repository.UsuarioRepository;
 
@@ -44,6 +45,13 @@ public class UsuarioService {
 	public String delete(Long id) {
 		this.usuarioRepository.deleteById(id);
 		return "Usuario deletado com sucesso";
+	}
+	
+	public String disable(Long id) {
+		Usuario usuarioInDB = this.findById(id);
+		usuarioInDB.setAtivo(false);
+		this.usuarioRepository.save(usuarioInDB);
+		return " Usuário desativado com sucesso!";
 	}
 	
 }

@@ -21,7 +21,7 @@ public class ProdutoService {
             return "Produto com o mesmo nome e descrição já existe";
         }
 
-        // Salvar o novo produto
+        produto.setAtivo(true);
         this.produtoRepository.save(produto);
         return "Produto salvo com sucesso";
     }
@@ -46,6 +46,13 @@ public class ProdutoService {
 	public String delete(Long id) {
 		this.produtoRepository.deleteById(id);
 		return " Produto deletado com sucesso!";
+	}
+	
+	public String disable(Long id) {
+		Produto produtoInDB = this.findById(id);
+		produtoInDB.setAtivo(false);
+		this.produtoRepository.save(produtoInDB);
+		return " Produto desativado com sucesso!";
 	}
 	
 }

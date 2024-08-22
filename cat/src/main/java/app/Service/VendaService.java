@@ -77,9 +77,12 @@ public class VendaService {
 	}
 
 	private Venda atualizarVenda(Venda venda, long id) {
+		
+		if(!venda.getUsuario().isAtivo()) {
+			throw new RuntimeException("Erro: "+ venda.getUsuario().getNome() +" foi desativado");
+		}
 
 		Venda vendaInDb = findById(id);
-
 		venda.setId(id);
 		venda.setProdutosVenda(this.verificarProdutos(venda.getProdutosVenda()));
 		venda.setData(vendaInDb.getData());
@@ -97,6 +100,11 @@ public class VendaService {
 		// Caso um produto esteja presente em mais de um produtoVenda, junta as
 		// quantidades de em um só produtoVenda na lista temporária
 		for (int i = 0; i < produtosVenda.size(); i++) {
+			
+			if(!produtosVenda.get(i).getProduto().isAtivo()) {
+				throw new RuntimeException("Erro: você está tentando vender um ou mais produtos desativados");
+			}
+			
 			boolean encontrou = false;
 			for (int j = 0; j < listTemp.size(); j++) {
 				if (produtosVenda.get(i).getProduto().getId() == listTemp.get(j).getProduto().getId()) {

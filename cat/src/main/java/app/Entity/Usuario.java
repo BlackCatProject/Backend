@@ -27,31 +27,33 @@ import lombok.Setter;
 public class Usuario {
 
 	@Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
-    
-    @NotBlank(message = "O nome é obrigatório")
-    private String nome;
-    
-    @NotBlank(message = "Login é obrigatório")
-    @Size(min = 3, max = 20, message = "Login deve ter entre 3 e 20 caracteres")
-    private String login;
-    
-    @NotBlank(message = "A senha é obrigatória")
-    @Size(min = 8, message = "A senha deve ter no minimo 8 caracteres")
-    private String senha;
-       
-    @NotNull(message = "O tipo de usuaio é obrigatorio")
-    @Enumerated(EnumType.STRING)
-    private Role role;
-    
-    //setando Role como GESTOR ou FUNCIONARIO
-    public enum Role {
-    	GESTOR, FUNCIONARIO;
-    }
-   
-    @OneToMany(mappedBy = "usuario")
-    @JsonIgnoreProperties("usuario")
-    private List<Venda> vendas;
-    
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private long id;
+
+	@NotBlank(message = "O nome é obrigatório")
+	private String nome;
+
+	@NotBlank(message = "Login é obrigatório")
+	@Size(min = 3, max = 20, message = "Login deve ter entre 3 e 20 caracteres")
+	private String login;
+
+	@NotBlank(message = "A senha é obrigatória")
+	@Size(min = 8, message = "A senha deve ter no minimo 8 caracteres")
+	private String senha;
+
+	@NotNull(message = "O tipo de usuaio é obrigatorio")
+	@Enumerated(EnumType.STRING)
+	private Role role;
+
+	private boolean ativo;
+
+	// setando Role como GESTOR ou FUNCIONARIO
+	public enum Role {
+		GESTOR, FUNCIONARIO;
+	}
+
+	@OneToMany(mappedBy = "usuario")
+	@JsonIgnoreProperties("usuario")
+	private List<Venda> vendas;
+
 }

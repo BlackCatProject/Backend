@@ -78,5 +78,16 @@ public class UsuarioController {
 			return new ResponseEntity<>("Erro ao deletar Usuario!", HttpStatus.BAD_REQUEST);
 		}
 	}
+	
+	@PutMapping("/disable/{id}")
+    public ResponseEntity<String> disable(@PathVariable Long id) {
+        try {
+            String msn = this.usuarioService.disable(id);
+            return new ResponseEntity<>(msn, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>("Deu erro! " + e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+ 
 
 }

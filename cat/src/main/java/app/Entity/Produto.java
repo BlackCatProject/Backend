@@ -33,6 +33,8 @@ public class Produto {
 	
 	private String descricao;
 	
+	private boolean ativo;
+	
 	@NotNull(message = "O preço do produto é obrigatório")
 	@Positive(message = "O preço deve ser um valor positivo")
 	private double preco;

@@ -77,4 +77,16 @@ public class ProdutoController {
 		        return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		    }
 		}
+		
+		@PutMapping("/disable/{id}")
+	    public ResponseEntity<String> disable(@PathVariable Long id) {
+	        try {
+	            String msn = this.produtoService.disable(id);
+	            return new ResponseEntity<>(msn, HttpStatus.OK);
+	        } catch (Exception e) {
+	            return new ResponseEntity<>("Deu erro! " + e.getMessage(), HttpStatus.BAD_REQUEST);
+	        }
+	    }
+	 
+
 }
