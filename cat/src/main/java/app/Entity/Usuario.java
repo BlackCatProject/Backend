@@ -56,4 +56,5 @@ public class Usuario {
 	@JsonIgnoreProperties("usuario")
 	private List<Venda> vendas;
 
+
 }

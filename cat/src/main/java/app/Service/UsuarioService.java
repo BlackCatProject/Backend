@@ -14,34 +14,44 @@ import app.Repository.UsuarioRepository;
 public class UsuarioService {
 	@Autowired
 	private UsuarioRepository usuarioRepository;
-	
+
 	public String save(Usuario usuario) {
-        Optional<Usuario> existingUser = usuarioRepository.findByLogin(usuario.getLogin());
-        if (existingUser.isPresent()) {
-            return "Login já está em uso";
-        }
-        this.usuarioRepository.save(usuario);
-        return "Usuário salvo com sucesso";
+
+		if (conferirUser(usuario)) {
+			throw new RuntimeException("Login ou Senha já está em uso");
+		}
+
+		this.usuarioRepository.save(usuario);
+		return "Usuário salvo com sucesso";
 	}
-	
+
 	public String update(Usuario usuario, long id) {
+		if (conferirUser(usuario)) {
+			throw new RuntimeException("Login ou Senha já está em uso");
+		}
+
 		usuario.setId(id);
 		this.usuarioRepository.save(usuario);
-		return  "Atualizado com sucesso";
+		return "Atualizado com sucesso";
 	}
-	
+
+	public boolean conferirUser(Usuario usuario) {
+		Optional<Usuario> existingUser = usuarioRepository.findByLogin(usuario.getLogin());
+		return existingUser.isPresent();
+	}
+
 	public Usuario findById(long id) {
 		Optional<Usuario> optional = this.usuarioRepository.findById(id);
-		if(optional.isPresent()) {
+		if (optional.isPresent()) {
 			return optional.get();
-		}else
+		} else
 			return null;
 	}
-		
-	public List<Usuario> findAll(){
+
+	public List<Usuario> findAll() {
 		return this.usuarioRepository.findAll();
 	}
-	
+
 	public String delete(Long id) {
 		this.usuarioRepository.deleteById(id);
 		return "Usuario deletado com sucesso";
@@ -53,5 +63,5 @@ public class UsuarioService {
 		this.usuarioRepository.save(usuarioInDB);
 		return " Usuário desativado com sucesso!";
 	}
-	
+
 }
