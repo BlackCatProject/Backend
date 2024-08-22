@@ -41,7 +41,7 @@ public class Usuario {
     @Size(min = 8, message = "A senha deve ter no minimo 8 caracteres")
     private String senha;
        
-    @NotNull(message = "O tipo de usuaio é obrigatorio")
+    @NotNull(message = "O tipo de usuario é obrigatorio")
     @Enumerated(EnumType.STRING)
     private Role role;
     

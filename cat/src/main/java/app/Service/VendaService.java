@@ -91,7 +91,7 @@ public class VendaService {
 	}
 
 	private List<ProdutoVenda> verificarProdutos(List<ProdutoVenda> produtosVenda) {
-		
+
 		List<ProdutoVenda> listTemp = new ArrayList<>();
 
 		// Caso um produto esteja presente em mais de um produtoVenda, junta as
@@ -101,8 +101,8 @@ public class VendaService {
 			for (int j = 0; j < listTemp.size(); j++) {
 				if (produtosVenda.get(i).getProduto().getId() == listTemp.get(j).getProduto().getId()) {
 					encontrou = true;
-					listTemp.get(j).setQuantidade(
-							listTemp.get(j).getQuantidade() + produtosVenda.get(i).getQuantidade());
+					listTemp.get(j)
+							.setQuantidade(listTemp.get(j).getQuantidade() + produtosVenda.get(i).getQuantidade());
 				}
 			}
 
@@ -164,9 +164,9 @@ public class VendaService {
 		return vendaRepository.findByUsuarioId(usuarioId);
 	}
 
-    public Venda buscarPorNumeroNfe(long numeroNfe) {
-        return vendaRepository.findByNfe(numeroNfe)
-                .orElseThrow(() -> new NoSuchElementException("Venda não encontrada com o número da NFe: " + numeroNfe));
-    }
+	public Venda buscarPorNumeroNfe(long numeroNfe) {
+		return vendaRepository.findByNfe(numeroNfe).orElseThrow(
+				() -> new NoSuchElementException("Venda não encontrada com o número da NFe: " + numeroNfe));
+	}
 
 }
