@@ -29,20 +29,23 @@ public class ProdutoService {
 
 
 	public String update(Produto produto, long id) {
+		 produto.setId(id);
 
-		if (conferirProd(produto)) {
-			throw new RuntimeException("Produto com o mesmo nome e descrição já existe");
-		}
-		produto.setId(id);
+	        if (conferirProd(produto)) {
+	            throw new RuntimeException("Produto com o mesmo nome e descrição já existe");
+	        }
+	
 		this.produtoRepository.save(produto);
 		return "Atualizado com sucesso";
 	}
 
 	public boolean conferirProd(Produto produto) {
-		
-		return this.produtoRepository.existsByNomeAndDescricao(produto.getNome(), produto.getDescricao());
-		
+	    Optional<Produto> existingProduct = produtoRepository.findByNomeAndDescricao(produto.getNome(), produto.getDescricao());
+	    
+	    // Verifica se o produto existe e se o ID é diferente do ID do produto que está sendo atualizado
+	    return existingProduct.isPresent() && existingProduct.get().getId() != produto.getId();
 	}
+
 
 	public Produto findById(long id) {
 		Optional<Produto> optional = this.produtoRepository.findById(id);

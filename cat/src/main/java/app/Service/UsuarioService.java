@@ -26,18 +26,21 @@ public class UsuarioService {
 	}
 
 	public String update(Usuario usuario, long id) {
-		if (conferirUser(usuario)) {
-			throw new RuntimeException("Login ou Senha já está em uso");
-		}
+		 // Define o ID no objeto usuário antes de verificar a existência de login duplicado
+	    usuario.setId(id);
+	    
+	    if (conferirUser(usuario)) {
+	        throw new RuntimeException("Login ou Senha já está em uso");
+	    }
 
-		usuario.setId(id);
 		this.usuarioRepository.save(usuario);
 		return "Atualizado com sucesso";
 	}
 
 	public boolean conferirUser(Usuario usuario) {
 		Optional<Usuario> existingUser = usuarioRepository.findByLogin(usuario.getLogin());
-		return existingUser.isPresent();
+		// Verifica se o usuário existe e se o ID é diferente do ID do usuário que está sendo atualizado
+		return existingUser.isPresent() && existingUser.get().getId() != usuario.getId();
 	}
 
 	public Usuario findById(long id) {
