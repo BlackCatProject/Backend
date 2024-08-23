@@ -68,6 +68,13 @@ public class ProdutoService {
 		return " Produto desativado com sucesso!";
 	}
 	
+	public String enable(Long id) {
+		Produto produtoInDB = this.findById(id);
+		produtoInDB.setAtivo(true);
+		this.produtoRepository.save(produtoInDB);
+		return " Produto desativado com sucesso!";
+	}
+	
 }
 
 

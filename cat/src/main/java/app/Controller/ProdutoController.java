@@ -88,5 +88,15 @@ public class ProdutoController {
 	        }
 	    }
 	 
+		@PutMapping("/enable/{id}")
+		public ResponseEntity<String> enable(@PathVariable Long id) {
+			try {
+				String msn = this.produtoService.enable(id);
+				return new ResponseEntity<>(msn, HttpStatus.OK);
+			} catch (Exception e) {
+				return new ResponseEntity<>("Deu erro! " + e.getMessage(), HttpStatus.BAD_REQUEST);
+			}
+		}
+		
 
 }

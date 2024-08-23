@@ -6,7 +6,6 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import app.Entity.Produto;
 import app.Entity.Usuario;
 import app.Repository.UsuarioRepository;
 
@@ -21,6 +20,7 @@ public class UsuarioService {
 			throw new RuntimeException("Login ou Senha já está em uso");
 		}
 
+		usuario.setAtivo(true);
 		this.usuarioRepository.save(usuario);
 		return "Usuário salvo com sucesso";
 	}
@@ -60,6 +60,13 @@ public class UsuarioService {
 	public String disable(Long id) {
 		Usuario usuarioInDB = this.findById(id);
 		usuarioInDB.setAtivo(false);
+		this.usuarioRepository.save(usuarioInDB);
+		return " Usuário desativado com sucesso!";
+	}
+	
+	public String enable(Long id) {
+		Usuario usuarioInDB = this.findById(id);
+		usuarioInDB.setAtivo(true);
 		this.usuarioRepository.save(usuarioInDB);
 		return " Usuário desativado com sucesso!";
 	}

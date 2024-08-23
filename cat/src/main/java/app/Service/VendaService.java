@@ -3,7 +3,6 @@ package app.Service;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -67,6 +66,10 @@ public class VendaService {
 
 	private Venda registrarVenda(Venda venda) {
 
+		if(!venda.getUsuario().isAtivo()) {
+			throw new RuntimeException("Erro: "+ venda.getUsuario().getNome() +" foi desativado");
+		}
+		
 		venda.setProdutosVenda(this.verificarProdutos(venda.getProdutosVenda()));
 		double valorTotal = calcularTotal(venda);
 		venda.setTotal(valorTotal);
