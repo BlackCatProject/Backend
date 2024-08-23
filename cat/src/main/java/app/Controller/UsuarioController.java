@@ -12,11 +12,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import app.Entity.Usuario;
 import app.Service.UsuarioService;
-import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("api/usuario")
@@ -60,9 +60,9 @@ public class UsuarioController {
 	}
 
 	@GetMapping("/findAll")
-	public ResponseEntity<List<Usuario>> findAll() {
+	public ResponseEntity<List<Usuario>> findAll(@RequestParam boolean ativo) {
 		try {
-			List<Usuario> lista = this.usuarioService.findAll();
+			List<Usuario> lista = this.usuarioService.findAll(ativo);
 			return new ResponseEntity<>(lista, HttpStatus.OK);
 		} catch (Exception e) {
 			return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);

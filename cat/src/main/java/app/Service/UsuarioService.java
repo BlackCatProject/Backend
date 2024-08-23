@@ -48,8 +48,8 @@ public class UsuarioService {
 			return null;
 	}
 
-	public List<Usuario> findAll() {
-		return this.usuarioRepository.findAll();
+	public List<Usuario> findAll(boolean ativo) {
+		return this.usuarioRepository.findByAtivo(ativo);
 	}
 
 	public String delete(Long id) {

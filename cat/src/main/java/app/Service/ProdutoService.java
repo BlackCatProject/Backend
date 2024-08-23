@@ -52,8 +52,8 @@ public class ProdutoService {
 			return null;
 	}
 
-	public List<Produto> findAll() {
-		return this.produtoRepository.findAll();
+	public List<Produto> findAll(boolean ativo) {
+		return this.produtoRepository.findByAtivo(ativo);
 	}
 
 	public String delete(Long id) {
