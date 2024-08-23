@@ -13,7 +13,9 @@ import org.springframework.stereotype.Service;
 
 import app.Entity.Produto;
 import app.Entity.ProdutoVenda;
+import app.Entity.Usuario;
 import app.Entity.Venda;
+import app.Repository.UsuarioRepository;
 import app.Repository.VendaRepository;
 
 @Service
@@ -23,6 +25,9 @@ public class VendaService {
 
 	@Autowired
 	private ProdutoService produtoService;
+	@Autowired
+	private UsuarioRepository usuarioRepository;
+
 
 	public String save(Venda venda) {
 		venda = registrarVenda(venda);
@@ -66,17 +71,21 @@ public class VendaService {
 
 	private Venda registrarVenda(Venda venda) {
 
-		if(!venda.getUsuario().isAtivo()) {
-			throw new RuntimeException("Erro: "+ venda.getUsuario().getNome() +" foi desativado");
-		}
-		
-		venda.setProdutosVenda(this.verificarProdutos(venda.getProdutosVenda()));
-		double valorTotal = calcularTotal(venda);
-		venda.setTotal(valorTotal);
-		venda.setNfe(gerarNfe());
-		venda.setData(LocalDateTime.now());
+		 // Verificar se o usuário está ativo no banco de dados
+		Usuario usuario = usuarioRepository.findById(venda.getUsuario().getId())
+		        .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
 
-		return venda;
+	    if (!usuario.isAtivo()) {
+	        throw new RuntimeException("Erro: " + usuario.getNome() + " foi desativado");
+	    }
+	    
+	    venda.setProdutosVenda(this.verificarProdutos(venda.getProdutosVenda()));
+	    double valorTotal = calcularTotal(venda);
+	    venda.setTotal(valorTotal);
+	    venda.setNfe(gerarNfe());
+	    venda.setData(LocalDateTime.now());
+
+	    return venda;
 	}
 
 	private Venda atualizarVenda(Venda venda, long id) {
@@ -84,7 +93,7 @@ public class VendaService {
 		if(!venda.getUsuario().isAtivo()) {
 			throw new RuntimeException("Erro: "+ venda.getUsuario().getNome() +" foi desativado");
 		}
-
+		 
 		Venda vendaInDb = findById(id);
 		venda.setId(id);
 		venda.setProdutosVenda(this.verificarProdutos(venda.getProdutosVenda()));
@@ -97,32 +106,37 @@ public class VendaService {
 	}
 
 	private List<ProdutoVenda> verificarProdutos(List<ProdutoVenda> produtosVenda) {
+	    List<ProdutoVenda> listTemp = new ArrayList<>();
 
-		List<ProdutoVenda> listTemp = new ArrayList<>();
+	    for (ProdutoVenda produtoVenda : produtosVenda) {
+	        // Verificar se o produto está ativo no banco de dados
+	        Produto produto = produtoService.findById(produtoVenda.getProduto().getId());
+	        
+	        // Se o produto não for encontrado, lançar uma exceção
+	        if (produto == null) {
+	            throw new RuntimeException("Produto não encontrado");
+	        }
+	        // Verificar se o produto está ativo
+	        if (!produto.isAtivo()) {
+	            throw new RuntimeException("Erro: o produto " + produto.getNome() + " foi desativado.");
+	        }
 
-		// Caso um produto esteja presente em mais de um produtoVenda, junta as
-		// quantidades de em um só produtoVenda na lista temporária
-		for (int i = 0; i < produtosVenda.size(); i++) {
-			
-			if(!produtosVenda.get(i).getProduto().isAtivo()) {
-				throw new RuntimeException("Erro: você está tentando vender um ou mais produtos desativados");
-			}
-			
-			boolean encontrou = false;
-			for (int j = 0; j < listTemp.size(); j++) {
-				if (produtosVenda.get(i).getProduto().getId() == listTemp.get(j).getProduto().getId()) {
-					encontrou = true;
-					listTemp.get(j)
-							.setQuantidade(listTemp.get(j).getQuantidade() + produtosVenda.get(i).getQuantidade());
-				}
-			}
+	        boolean encontrou = false;
+	        for (ProdutoVenda tempProdutoVenda : listTemp) {
+	            if (produto.getId() == tempProdutoVenda.getProduto().getId()) {
+	                encontrou = true;
+	                tempProdutoVenda.setQuantidade(tempProdutoVenda.getQuantidade() + produtoVenda.getQuantidade());
+	            }
+	        }
 
-			if (!encontrou) {
-				listTemp.add(produtosVenda.get(i));
-			}
-		}
-		return listTemp;
+	        if (!encontrou) {
+	            produtoVenda.setProduto(produto); // Garantir que o produto atualizado está no ProdutoVenda
+	            listTemp.add(produtoVenda);
+	        }
+	    }
+	    return listTemp;
 	}
+
 
 	private double calcularTotal(Venda venda) {
 

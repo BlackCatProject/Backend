@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import app.Entity.Venda;
+import app.Repository.UsuarioRepository;
 import app.Service.VendaService;
 
 @RestController
@@ -24,6 +25,9 @@ import app.Service.VendaService;
 public class VendaController {
 	@Autowired
 	private VendaService vendaService ;
+	@Autowired
+	private UsuarioRepository usuarioRepository;
+
 	
 	@PostMapping("/save")
 	public ResponseEntity<String> save(@RequestBody Venda venda) {
