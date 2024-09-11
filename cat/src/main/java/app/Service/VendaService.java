@@ -92,7 +92,7 @@ public class VendaService {
 
 		 // Verificar se o usuário está ativo no banco de dados
 		Usuario usuario = usuarioRepository.findById(venda.getUsuario().getId())
-		        .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+		        .orElseThrow(() -> new RuntimeException("Usuário não encontrado")); // arrumar e nao usar ->
 
 	    if (!usuario.isAtivo()) {
 	        throw new RuntimeException("Erro: " + usuario.getNome() + " foi desativado");
