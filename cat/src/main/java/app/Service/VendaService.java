@@ -26,29 +26,10 @@ public class VendaService {
 	@Autowired
 	private ProdutoService produtoService;
 	@Autowired
-	private UsuarioRepository usuarioRepository;
+	private UsuarioService usuarioService;
 
 
 	public String save(Venda venda) {
-		// verifica user 
-		   if (venda.getUsuario() == null || !venda.getUsuario().isAtivo()) {
-		        throw new RuntimeException("Erro: " + venda.getUsuario().getNome() + " foi desativado");
-		    }
-		
-		 // Verificar  lista de produtos ta vazia
-	    if (venda.getProdutosVenda() == null || venda.getProdutosVenda().isEmpty()) {
-	        throw new RuntimeException("A lista de produtos não pode estar vazia");
-	    }
-	    // Verificar se todos os produtos estao ativos
-	    for (ProdutoVenda produtoVenda : venda.getProdutosVenda()) {
-	        Produto produto = produtoService.findById(produtoVenda.getProduto().getId());
-	        if (!produto.isAtivo()) {
-	            throw new RuntimeException("Produto inativo, venda não permitida");
-	        }
-	        produtoVenda.setProduto(produto); // Garantir que o produto atualizado está no ProdutoVenda
-	    }
-
-		
 		venda = registrarVenda(venda);
 
 		// toda vez que tiver um relacionamento @onetomany e que vc salva em cascata,
@@ -91,8 +72,7 @@ public class VendaService {
 	private Venda registrarVenda(Venda venda) {
 
 		 // Verificar se o usuário está ativo no banco de dados
-		Usuario usuario = usuarioRepository.findById(venda.getUsuario().getId())
-		        .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+		Usuario usuario = usuarioService.findById(venda.getUsuario().getId());
 
 	    if (!usuario.isAtivo()) {
 	        throw new RuntimeException("Erro: " + usuario.getNome() + " foi desativado");
