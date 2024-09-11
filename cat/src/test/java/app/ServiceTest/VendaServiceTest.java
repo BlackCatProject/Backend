@@ -33,7 +33,6 @@ public class VendaServiceTest {
 	@MockBean
 	VendaRepository vendaRepository;
 
-	
 	@MockBean
 	ProdutoService produtoService;
 
@@ -79,8 +78,8 @@ public class VendaServiceTest {
 
 	@Test
 	@DisplayName("Realizar venda com todos os campos corretos")
-	 void SalvarVenda() {
-		
+	void SalvarVenda() {
+
 		Usuario usuario = new Usuario();
 		usuario.setId(3L);
 		usuario.setNome("jose de amado");
@@ -103,16 +102,20 @@ public class VendaServiceTest {
 
 		Mockito.when(produtoService.findById(1L)).thenReturn(produto);
 		vendaService.save(venda);
-		
-		double valorEsperado = produto.getPreco() * produtoVenda.getQuantidade() * (1 - (venda.getDesconto() / 100.0));//num sei se ta certo 
+
+		double valorEsperado = produto.getPreco() * produtoVenda.getQuantidade() * (1 - (venda.getDesconto() / 100.0));// num
+																														// sei
+																														// se
+																														// ta
+																														// certo
 		assert (venda.getTotal() == valorEsperado);
-		
+
 	}
-	
+
 	@Test
 	@DisplayName("Erro ao tentar realizar venda com usuário inativo")
 	void VendaUserNegativo() {
-		
+
 		Usuario usuario = new Usuario();
 		usuario.setId(1L);
 		usuario.setNome("Maria Pinto souza");
@@ -132,25 +135,25 @@ public class VendaServiceTest {
 		venda.setUsuario(usuario);
 		venda.setProdutosVenda(Arrays.asList(produtoVenda));
 		venda.setDesconto(10);
-		
+
 		Mockito.when(usuarioService.findById(1L)).thenReturn(usuario);
-		
-		Exception exception = assertThrows(RuntimeException.class, ()-> {
+
+		Exception exception = assertThrows(RuntimeException.class, () -> {
 			vendaService.save(venda);
 		});
 
-		 assertEquals("Erro: Maria Pinto souza foi desativado", exception.getMessage());
+		assertEquals("Erro: Maria Pinto souza foi desativado", exception.getMessage());
 	}
 
 	@Test
 	@DisplayName("Erro ao tentar realizar venda com produto inativo")
 	void VendaProdutoNegativo() {
-		
+
 		Usuario usuario = new Usuario();
 		usuario.setId(3L);
 		usuario.setNome("jose de amado");
 		usuario.setAtivo(true);
-		
+
 		Produto produto = new Produto();
 		produto.setId(9L);
 		produto.setNome("torta de banana");
@@ -165,13 +168,49 @@ public class VendaServiceTest {
 		venda.setUsuario(usuario);
 		venda.setProdutosVenda(Arrays.asList(produtoVenda));
 		venda.setDesconto(10);
-		
+
 		Mockito.when(produtoService.findById(9L)).thenReturn(produto);
-		
-		Exception exception = assertThrows(RuntimeException.class, ()-> {
+
+		Exception exception = assertThrows(RuntimeException.class, () -> {
 			vendaService.save(venda);
 		});
 
-		 assertEquals("Produto inativo, venda não permitida", exception.getMessage());
+		assertEquals("Produto inativo, venda não permitida", exception.getMessage());
 	}
+
+	@Test
+	@DisplayName("Erro ao tentar realizar venda com lista de produtos vazia")
+	void VendaProdutosVazios() {
+
+		Usuario usuario = new Usuario();
+		usuario.setId(3L);
+		usuario.setNome("jose de amado");
+		usuario.setAtivo(true);
+
+		Produto produto = new Produto();
+		produto.setId(9L);
+		produto.setNome("torta de banana");
+		produto.setPreco(99.99);
+		produto.setAtivo(true);
+
+		ProdutoVenda produtoVenda = new ProdutoVenda();
+		produtoVenda.setProduto(produto);
+		produtoVenda.setQuantidade(1);
+
+		Venda venda = new Venda();
+		venda.setUsuario(usuario);
+		venda.setProdutosVenda(Arrays.asList());
+		venda.setDesconto(10);
+
+		Mockito.when(produtoService.findById(9L)).thenReturn(produto);
+
+		Exception exception = assertThrows(RuntimeException.class, () -> {
+			vendaService.save(venda);
+		});
+
+		assertEquals("A lista de produtos não pode estar vazia", exception.getMessage());
+	}
+	
+	
+	
 }
