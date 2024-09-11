@@ -30,11 +30,12 @@ public class VendaService {
 
 
 	public String save(Venda venda) {
+		// verifica user 
 		   if (venda.getUsuario() == null || !venda.getUsuario().isAtivo()) {
 		        throw new RuntimeException("Erro: " + venda.getUsuario().getNome() + " foi desativado");
 		    }
 		
-		 // Verificar se a lista de produtos ta vazia
+		 // Verificar  lista de produtos ta vazia
 	    if (venda.getProdutosVenda() == null || venda.getProdutosVenda().isEmpty()) {
 	        throw new RuntimeException("A lista de produtos não pode estar vazia");
 	    }

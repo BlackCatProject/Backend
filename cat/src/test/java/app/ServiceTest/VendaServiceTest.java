@@ -103,11 +103,8 @@ public class VendaServiceTest {
 		Mockito.when(produtoService.findById(1L)).thenReturn(produto);
 		vendaService.save(venda);
 
-		double valorEsperado = produto.getPreco() * produtoVenda.getQuantidade() * (1 - (venda.getDesconto() / 100.0));// num
-																														// sei
-																														// se
-																														// ta
-																														// certo
+		double valorEsperado = produto.getPreco() * produtoVenda.getQuantidade() * (1 - (venda.getDesconto() / 100.0));// num sei se ta certo
+																														
 		assert (venda.getTotal() == valorEsperado);
 
 	}
