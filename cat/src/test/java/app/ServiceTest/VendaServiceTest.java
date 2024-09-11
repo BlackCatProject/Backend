@@ -73,7 +73,7 @@ public class VendaServiceTest {
 
 		Mockito.when(produtoService.findById(1L)).thenReturn(produto01);
 
-		Mockito.when(usuarioService.findById(1L)).thenReturn(usuario01);
+		Mockito.when(usuarioService.findById(3L)).thenReturn(usuario01);
 
 	}
 
@@ -142,4 +142,36 @@ public class VendaServiceTest {
 		 assertEquals("Erro: Maria Pinto souza foi desativado", exception.getMessage());
 	}
 
+	@Test
+	@DisplayName("Erro ao tentar realizar venda com produto inativo")
+	void VendaProdutoNegativo() {
+		
+		Usuario usuario = new Usuario();
+		usuario.setId(3L);
+		usuario.setNome("jose de amado");
+		usuario.setAtivo(true);
+		
+		Produto produto = new Produto();
+		produto.setId(9L);
+		produto.setNome("torta de banana");
+		produto.setPreco(99.99);
+		produto.setAtivo(false);
+
+		ProdutoVenda produtoVenda = new ProdutoVenda();
+		produtoVenda.setProduto(produto);
+		produtoVenda.setQuantidade(1);
+
+		Venda venda = new Venda();
+		venda.setUsuario(usuario);
+		venda.setProdutosVenda(Arrays.asList(produtoVenda));
+		venda.setDesconto(10);
+		
+		Mockito.when(produtoService.findById(9L)).thenReturn(produto);
+		
+		Exception exception = assertThrows(RuntimeException.class, ()-> {
+			vendaService.save(venda);
+		});
+
+		 assertEquals("Produto inativo, venda não permitida", exception.getMessage());
+	}
 }

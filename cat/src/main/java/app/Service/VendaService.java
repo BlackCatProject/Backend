@@ -30,6 +30,17 @@ public class VendaService {
 
 
 	public String save(Venda venda) {
+		
+	    // Verificar se todos os produtos estão ativos
+	    for (ProdutoVenda produtoVenda : venda.getProdutosVenda()) {
+	        Produto produto = produtoService.findById(produtoVenda.getProduto().getId());
+	        if (!produto.isAtivo()) {
+	            throw new RuntimeException("Produto inativo, venda não permitida");
+	        }
+	        produtoVenda.setProduto(produto); // Garantir que o produto atualizado está no ProdutoVenda
+	    }
+
+		
 		venda = registrarVenda(venda);
 
 		// toda vez que tiver um relacionamento @onetomany e que vc salva em cascata,
