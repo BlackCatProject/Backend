@@ -1,9 +1,14 @@
 package app.ServiceTest;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.when;
+
 import java.time.LocalDateTime;
 import java.util.Arrays;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +33,7 @@ public class VendaServiceTest {
 	@MockBean
 	VendaRepository vendaRepository;
 
+	
 	@MockBean
 	ProdutoService produtoService;
 
@@ -72,7 +78,9 @@ public class VendaServiceTest {
 	}
 
 	@Test
+	@DisplayName("Realizar venda com todos os campos corretos")
 	 void SalvarVenda() {
+		
 		Usuario usuario = new Usuario();
 		usuario.setId(3L);
 		usuario.setNome("jose de amado");
@@ -99,6 +107,39 @@ public class VendaServiceTest {
 		double valorEsperado = produto.getPreco() * produtoVenda.getQuantidade() * (1 - (venda.getDesconto() / 100.0));//num sei se ta certo 
 		assert (venda.getTotal() == valorEsperado);
 		
+	}
+	
+	@Test
+	@DisplayName("Erro ao tentar realizar venda com usuário inativo")
+	void VendaUserNegativo() {
+		
+		Usuario usuario = new Usuario();
+		usuario.setId(1L);
+		usuario.setNome("Maria Pinto souza");
+		usuario.setAtivo(true);
+
+		Produto produto = new Produto();
+		produto.setId(1L);
+		produto.setNome("torta de banana");
+		produto.setPreco(99.99);
+		produto.setAtivo(true);
+
+		ProdutoVenda produtoVenda = new ProdutoVenda();
+		produtoVenda.setProduto(produto);
+		produtoVenda.setQuantidade(1);
+
+		Venda venda = new Venda();
+		venda.setUsuario(usuario);
+		venda.setProdutosVenda(Arrays.asList(produtoVenda));
+		venda.setDesconto(10);
+		
+		Mockito.when(usuarioService.findById(1L)).thenReturn(usuario);
+		
+		Exception exception = assertThrows(RuntimeException.class, ()-> {
+			vendaService.save(venda);
+		});
+
+		 assertEquals("Erro: Maria Pinto souza foi desativado", exception.getMessage());
 	}
 
 }
