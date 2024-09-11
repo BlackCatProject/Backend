@@ -72,7 +72,7 @@ public class VendaServiceTest {
 	}
 
 	@Test
-	public void testSalvarVenda() {
+	 void SalvarVenda() {
 		Usuario usuario = new Usuario();
 		usuario.setId(3L);
 		usuario.setNome("jose de amado");
