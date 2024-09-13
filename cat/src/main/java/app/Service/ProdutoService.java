@@ -75,7 +75,7 @@ public class ProdutoService {
 		Produto produtoInDB = this.findById(id);
 		produtoInDB.setAtivo(true);
 		this.produtoRepository.save(produtoInDB);
-		return " Produto desativado com sucesso!";
+		return "Produto ativado com sucesso!";
 	}
 	
 }
