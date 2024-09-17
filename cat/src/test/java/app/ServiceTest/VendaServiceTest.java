@@ -7,6 +7,9 @@ import static org.mockito.Mockito.times;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -332,7 +335,7 @@ public class VendaServiceTest {
 		venda.setUsuario(usuario);
 		venda.setProdutosVenda(Arrays.asList(produtoVenda));
 		venda.setDesconto(10);
-		venda.setFormaPagamento("Forma Inválida"); // Forma inválida
+		venda.setFormaPagamento("Forma Inválida");
 		venda.setData(LocalDateTime.now());
 
 		Mockito.when(produtoService.findById(1L)).thenReturn(produto);
@@ -343,6 +346,72 @@ public class VendaServiceTest {
 		});
 
 		assertEquals("Forma de pagamento inválida", exception.getMessage());
+	}
+
+	@Test
+	@DisplayName("Atualizar venda com sucesso")
+	void testUpdateVenda() {
+
+		Usuario usuario = new Usuario();
+		usuario.setId(3L);
+		usuario.setNome("jose de amado");
+		usuario.setAtivo(true);
+
+		Produto produto = new Produto();
+		produto.setId(1L);
+		produto.setNome("torta de banana");
+		produto.setPreco(99.99);
+		produto.setAtivo(true);
+
+		ProdutoVenda produtoVenda = new ProdutoVenda();
+		produtoVenda.setProduto(produto);
+		produtoVenda.setQuantidade(2);
+
+		Venda vendaExistente = new Venda();
+		vendaExistente.setId(1L);
+		vendaExistente.setUsuario(usuario);
+		vendaExistente.setProdutosVenda(Arrays.asList(produtoVenda));
+		vendaExistente.setDesconto(5);
+		vendaExistente.setFormaPagamento("Dinheiro");
+		vendaExistente.setData(LocalDateTime.now().minusDays(2));
+		vendaExistente.setNfe(123456789L);
+
+		Mockito.when(vendaRepository.findById(1L)).thenReturn(Optional.of(vendaExistente));
+
+		Venda vendaAtualizada = new Venda();
+		vendaAtualizada.setUsuario(usuario);
+		vendaAtualizada.setProdutosVenda(Arrays.asList(produtoVenda));
+		vendaAtualizada.setDesconto(10);
+		vendaAtualizada.setFormaPagamento("Cartão de Crédito");
+		vendaAtualizada.setData(LocalDateTime.now());
+
+		Mockito.when(vendaRepository.save(Mockito.any(Venda.class))).thenReturn(vendaAtualizada);
+
+		String result = vendaService.update(vendaAtualizada, 1L);
+
+		Mockito.verify(vendaRepository, times(1)).save(Mockito.any(Venda.class));
+
+		assertEquals("Atualizada com sucesso", result);
+
+		assertEquals(vendaExistente.getData(), vendaAtualizada.getData()); // A data da venda existente deve ser mantida
+		assertEquals(vendaExistente.getNfe(), vendaAtualizada.getNfe()); // A NFe da venda existente deve ser mantida
+	}
+
+	@Test
+	@DisplayName("Buscar vendas por data")
+	void testFindByData() {
+
+		LocalDateTime startDate = LocalDateTime.of(2023, 9, 1, 0, 0);
+		LocalDateTime endDate = LocalDateTime.of(2023, 9, 30, 23, 59);
+
+		List<Venda> vendas = Arrays.asList(new Venda(), new Venda());
+
+		Mockito.when(vendaRepository.findByDataBetween(startDate, endDate)).thenReturn(vendas);
+
+		List<Venda> result = vendaService.findByData(startDate, endDate);
+
+		assertEquals(2, result.size());
+		Mockito.verify(vendaRepository, Mockito.times(1)).findByDataBetween(startDate, endDate);
 	}
 
 }
