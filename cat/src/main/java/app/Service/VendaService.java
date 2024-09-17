@@ -3,6 +3,7 @@ package app.Service;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -28,27 +29,9 @@ public class VendaService {
 	@Autowired
 	private UsuarioRepository usuarioRepository;
 
-
 	public String save(Venda venda) {
-		// verifica user 
-		   if (venda.getUsuario() == null || !venda.getUsuario().isAtivo()) {
-		        throw new RuntimeException("Erro: " + venda.getUsuario().getNome() + " foi desativado");
-		    }
-		
-		 // Verificar  lista de produtos ta vazia
-	    if (venda.getProdutosVenda() == null || venda.getProdutosVenda().isEmpty()) {
-	        throw new RuntimeException("A lista de produtos não pode estar vazia");
-	    }
-	    // Verificar se todos os produtos estao ativos
-	    for (ProdutoVenda produtoVenda : venda.getProdutosVenda()) {
-	        Produto produto = produtoService.findById(produtoVenda.getProduto().getId());
-	        if (!produto.isAtivo()) {
-	            throw new RuntimeException("Produto inativo, venda não permitida");
-	        }
-	        produtoVenda.setProduto(produto); // Garantir que o produto atualizado está no ProdutoVenda
-	    }
+		validarVenda(venda);
 
-		
 		venda = registrarVenda(venda);
 
 		// toda vez que tiver um relacionamento @onetomany e que vc salva em cascata,
@@ -63,6 +46,47 @@ public class VendaService {
 		this.vendaRepository.save(venda);
 		return "Venda salva com sucesso";
 	}
+	
+	private void validarVenda(Venda venda) {
+	    // Verificar se o usuário está ativo
+	    if (venda.getUsuario() == null || !venda.getUsuario().isAtivo()) {
+	        throw new RuntimeException("Erro: " + venda.getUsuario().getNome() + " foi desativado");
+	    }
+
+	    // Verificar se a lista de produtos não está vazia
+	    if (venda.getProdutosVenda() == null || venda.getProdutosVenda().isEmpty()) {
+	        throw new RuntimeException("A lista de produtos não pode estar vazia");
+	    }
+
+	    // Verificar se todos os produtos estão ativos
+	    for (ProdutoVenda produtoVenda : venda.getProdutosVenda()) {
+	        Produto produto = produtoService.findById(produtoVenda.getProduto().getId());
+	        if (!produto.isAtivo()) {
+	            throw new RuntimeException("Produto inativo, venda não permitida");
+	        }
+	        produtoVenda.setProduto(produto); // Atualizar o ProdutoVenda com o produto encontrado
+	    }
+
+	    // Verificar se a data da venda não está no futuro
+	    if (venda.getData() == null || venda.getData().isAfter(LocalDateTime.now())) {
+	        throw new RuntimeException("Venda com data no futuro não permitida");
+	    }
+	    
+	    if (venda.getProdutosVenda() != null) {
+	        for (ProdutoVenda produtoVenda : venda.getProdutosVenda()) {
+	            if (produtoVenda.getQuantidade() <= 0) {
+	                throw new RuntimeException("Quantidade do produto inválida");
+	            }
+	            produtoVenda.setVenda(venda);
+	        }
+	    }
+	    List<String> formasPagamentoValidas = Arrays.asList("Cartão de Débito", "Cartão de Crédito", "Dinheiro", "Cheque");
+	    if (!formasPagamentoValidas.contains(venda.getFormaPagamento())) {
+	        throw new RuntimeException("Forma de pagamento inválida");
+	    }
+	}
+
+
 
 	public String update(Venda venda, long id) {
 
@@ -90,29 +114,29 @@ public class VendaService {
 
 	private Venda registrarVenda(Venda venda) {
 
-		 // Verificar se o usuário está ativo no banco de dados
+		// Verificar se o usuário está ativo no banco de dados
 		Usuario usuario = usuarioRepository.findById(venda.getUsuario().getId())
-		        .orElseThrow(() -> new RuntimeException("Usuário não encontrado")); // arrumar e nao usar ->
+				.orElseThrow(() -> new RuntimeException("Usuário não encontrado")); // arrumar e nao usar ->
 
-	    if (!usuario.isAtivo()) {
-	        throw new RuntimeException("Erro: " + usuario.getNome() + " foi desativado");
-	    }
-	    
-	    venda.setProdutosVenda(this.verificarProdutos(venda.getProdutosVenda()));
-	    double valorTotal = calcularTotal(venda);
-	    venda.setTotal(valorTotal);
-	    venda.setNfe(gerarNfe());
-	    venda.setData(LocalDateTime.now());
+		if (!usuario.isAtivo()) {
+			throw new RuntimeException("Erro: " + usuario.getNome() + " foi desativado");
+		}
 
-	    return venda;
+		venda.setProdutosVenda(this.verificarProdutos(venda.getProdutosVenda()));
+		double valorTotal = calcularTotal(venda);
+		venda.setTotal(valorTotal);
+		venda.setNfe(gerarNfe());
+		venda.setData(LocalDateTime.now());
+
+		return venda;
 	}
 
 	private Venda atualizarVenda(Venda venda, long id) {
-		
-		if(!venda.getUsuario().isAtivo()) {
-			throw new RuntimeException("Erro: "+ venda.getUsuario().getNome() +" foi desativado");
+
+		if (!venda.getUsuario().isAtivo()) {
+			throw new RuntimeException("Erro: " + venda.getUsuario().getNome() + " foi desativado");
 		}
-		 
+
 		Venda vendaInDb = findById(id);
 		venda.setId(id);
 		venda.setProdutosVenda(this.verificarProdutos(venda.getProdutosVenda()));
@@ -125,37 +149,36 @@ public class VendaService {
 	}
 
 	private List<ProdutoVenda> verificarProdutos(List<ProdutoVenda> produtosVenda) {
-	    List<ProdutoVenda> listTemp = new ArrayList<>();
+		List<ProdutoVenda> listTemp = new ArrayList<>();
 
-	    for (ProdutoVenda produtoVenda : produtosVenda) {
-	        // Verificar se o produto está ativo no banco de dados
-	        Produto produto = produtoService.findById(produtoVenda.getProduto().getId());
-	        
-	        // Se o produto não for encontrado, lançar uma exceção
-	        if (produto == null) {
-	            throw new RuntimeException("Produto não encontrado");
-	        }
-	        // Verificar se o produto está ativo
-	        if (!produto.isAtivo()) {
-	            throw new RuntimeException("Erro: o produto " + produto.getNome() + " foi desativado.");
-	        }
+		for (ProdutoVenda produtoVenda : produtosVenda) {
+			// Verificar se o produto está ativo no banco de dados
+			Produto produto = produtoService.findById(produtoVenda.getProduto().getId());
 
-	        boolean encontrou = false;
-	        for (ProdutoVenda tempProdutoVenda : listTemp) {
-	            if (produto.getId() == tempProdutoVenda.getProduto().getId()) {
-	                encontrou = true;
-	                tempProdutoVenda.setQuantidade(tempProdutoVenda.getQuantidade() + produtoVenda.getQuantidade());
-	            }
-	        }
+			// Se o produto não for encontrado, lançar uma exceção
+			if (produto == null) {
+				throw new RuntimeException("Produto não encontrado");
+			}
+			// Verificar se o produto está ativo
+			if (!produto.isAtivo()) {
+				throw new RuntimeException("Erro: o produto " + produto.getNome() + " foi desativado.");
+			}
 
-	        if (!encontrou) {
-	            produtoVenda.setProduto(produto); // Garantir que o produto atualizado está no ProdutoVenda
-	            listTemp.add(produtoVenda);
-	        }
-	    }
-	    return listTemp;
+			boolean encontrou = false;
+			for (ProdutoVenda tempProdutoVenda : listTemp) {
+				if (produto.getId() == tempProdutoVenda.getProduto().getId()) {
+					encontrou = true;
+					tempProdutoVenda.setQuantidade(tempProdutoVenda.getQuantidade() + produtoVenda.getQuantidade());
+				}
+			}
+
+			if (!encontrou) {
+				produtoVenda.setProduto(produto); // Garantir que o produto atualizado está no ProdutoVenda
+				listTemp.add(produtoVenda);
+			}
+		}
+		return listTemp;
 	}
-
 
 	private double calcularTotal(Venda venda) {
 

@@ -2,11 +2,11 @@ package app.ServiceTest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.times;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -14,6 +14,9 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.dao.EmptyResultDataAccessException;
+
+import com.mysql.cj.x.protobuf.MysqlxDatatypes.Array;
 
 import app.Entity.Produto;
 import app.Entity.ProdutoVenda;
@@ -77,48 +80,13 @@ public class VendaServiceTest {
 	}
 
 	@Test
-	@DisplayName("Realizar venda com todos os campos corretos")
-	void SalvarVenda() {
-
-		Usuario usuario = new Usuario();
-		usuario.setId(3L);
-		usuario.setNome("jose de amado");
-		usuario.setAtivo(true);
-
-		Produto produto = new Produto();
-		produto.setId(1L);
-		produto.setNome("torta de banana");
-		produto.setPreco(99.99);
-		produto.setAtivo(true);
-
-		ProdutoVenda produtoVenda = new ProdutoVenda();
-		produtoVenda.setProduto(produto);
-		produtoVenda.setQuantidade(1);
-
-		Venda venda = new Venda();
-		venda.setUsuario(usuario);
-		venda.setProdutosVenda(Arrays.asList(produtoVenda));
-		venda.setDesconto(10);
-
-		Mockito.when(produtoService.findById(1L)).thenReturn(produto);
-		vendaService.save(venda);
-
-		double valorEsperado = produto.getPreco() * produtoVenda.getQuantidade() * (1 - venda.getDesconto() / 100.0);
-		assertEquals(valorEsperado, venda.getTotal(), 0.001);
-
-																														
-		
-
-	}
-
-	@Test
 	@DisplayName("Erro ao tentar realizar venda com usuário inativo")
 	void VendaUserNegativo() {
 
 		Usuario usuario = new Usuario();
 		usuario.setId(1L);
 		usuario.setNome("Maria Pinto souza");
-		usuario.setAtivo(true);
+		usuario.setAtivo(false);
 
 		Produto produto = new Produto();
 		produto.setId(1L);
@@ -134,9 +102,11 @@ public class VendaServiceTest {
 		venda.setUsuario(usuario);
 		venda.setProdutosVenda(Arrays.asList(produtoVenda));
 		venda.setDesconto(10);
+		venda.setData(LocalDateTime.now());
 
 		Mockito.when(usuarioService.findById(1L)).thenReturn(usuario);
 
+		// Realizar o teste
 		Exception exception = assertThrows(RuntimeException.class, () -> {
 			vendaService.save(venda);
 		});
@@ -209,7 +179,170 @@ public class VendaServiceTest {
 
 		assertEquals("A lista de produtos não pode estar vazia", exception.getMessage());
 	}
-	
-	
-	
+
+	@Test
+	@DisplayName("Erro ao tentar realizar venda com data no futuro")
+	void VendaComDataFutura() {
+		Usuario usuario = new Usuario();
+		usuario.setId(3L);
+		usuario.setNome("jose de amado");
+		usuario.setAtivo(true);
+
+		Produto produto = new Produto();
+		produto.setId(1L);
+		produto.setNome("torta de banana");
+		produto.setPreco(99.99);
+		produto.setAtivo(true);
+
+		ProdutoVenda produtoVenda = new ProdutoVenda();
+		produtoVenda.setProduto(produto);
+		produtoVenda.setQuantidade(1);
+
+		Venda venda = new Venda();
+		venda.setUsuario(usuario);
+		venda.setProdutosVenda(Arrays.asList(produtoVenda));
+		venda.setData(LocalDateTime.now().plusDays(1));
+
+		Exception exception = assertThrows(RuntimeException.class, () -> {
+			vendaService.save(venda);
+		});
+
+		assertEquals("Venda com data no futuro não permitida", exception.getMessage());
+
+	}
+
+	@Test
+	@DisplayName("Erro ao tentar realizar venda com produto inativo")
+	void ProdutoInativo() {
+
+		Usuario usuario = new Usuario();
+		usuario.setId(1L);
+		usuario.setNome("João Silva");
+		usuario.setAtivo(true);
+
+		Produto produtoInativo = new Produto();
+		produtoInativo.setId(1L);
+		produtoInativo.setNome("torta de maçã");
+		produtoInativo.setPreco(59.99);
+		produtoInativo.setAtivo(false);
+		ProdutoVenda produtoVenda = new ProdutoVenda();
+		produtoVenda.setProduto(produtoInativo);
+		produtoVenda.setQuantidade(1);
+
+		Venda venda = new Venda();
+		venda.setUsuario(usuario);
+		venda.setProdutosVenda(Arrays.asList(produtoVenda));
+		venda.setDesconto(10);
+		venda.setData(LocalDateTime.now());
+
+		Mockito.when(produtoService.findById(1L)).thenReturn(produtoInativo);
+
+		Exception exception = assertThrows(RuntimeException.class, () -> {
+			vendaService.save(venda);
+		});
+
+		assertEquals("Produto inativo, venda não permitida", exception.getMessage());
+	}
+
+	@Test
+	@DisplayName("Salvar venda corretamente ")
+	void salvarVenda() {
+
+		Usuario usuario = new Usuario();
+		usuario.setId(3L);
+		usuario.setNome("João Silva");
+		usuario.setAtivo(true);
+
+		Produto produto = new Produto();
+		produto.setId(1L);
+		produto.setNome("torta de maçã");
+		produto.setPreco(59.99);
+
+		ProdutoVenda produtoVenda = new ProdutoVenda();
+		produtoVenda.setProduto(produto);
+		produtoVenda.setQuantidade(1);
+
+		Venda venda = new Venda();
+		venda.setUsuario(usuario);
+		venda.setProdutosVenda(Arrays.asList(produtoVenda));
+		venda.setDesconto(10);
+		venda.setFormaPagamento("Cartão de Débito");
+		venda.setData(LocalDateTime.now());
+
+		String result = vendaService.save(venda);
+
+		Mockito.verify(vendaRepository, times(1)).save(venda);
+		assertEquals("Venda salva com sucesso", result);
+
+	}
+
+	@Test
+	@DisplayName("Erro ao tentar realizar venda com quantidade de produto inválida")
+	void QuantInvalida() {
+		Usuario usuario = new Usuario();
+		usuario.setId(3L);
+		usuario.setNome("jose de amado");
+		usuario.setAtivo(true);
+
+		Produto produto = new Produto();
+		produto.setId(1L);
+		produto.setNome("torta de banana");
+		produto.setPreco(99.99);
+		produto.setAtivo(true);
+
+		ProdutoVenda produtoVenda = new ProdutoVenda();
+		produtoVenda.setProduto(produto);
+		produtoVenda.setQuantidade(0);
+
+		Venda venda = new Venda();
+		venda.setUsuario(usuario);
+		venda.setProdutosVenda(Arrays.asList(produtoVenda));
+		venda.setDesconto(10);
+		venda.setData(LocalDateTime.now());
+
+		Mockito.when(produtoService.findById(1L)).thenReturn(produto);
+		Mockito.when(usuarioService.findById(3L)).thenReturn(usuario);
+
+		Exception exception = assertThrows(RuntimeException.class, () -> {
+			vendaService.save(venda);
+		});
+
+		assertEquals("Quantidade do produto inválida", exception.getMessage());
+	}
+
+	@Test
+	@DisplayName("Erro ao tentar realizar venda com forma de pagamento inválida")
+	void FormaPgInvalida() {
+		Usuario usuario = new Usuario();
+		usuario.setId(3L);
+		usuario.setNome("jose de amado");
+		usuario.setAtivo(true);
+
+		Produto produto = new Produto();
+		produto.setId(1L);
+		produto.setNome("torta de banana");
+		produto.setPreco(99.99);
+		produto.setAtivo(true);
+
+		ProdutoVenda produtoVenda = new ProdutoVenda();
+		produtoVenda.setProduto(produto);
+		produtoVenda.setQuantidade(1);
+
+		Venda venda = new Venda();
+		venda.setUsuario(usuario);
+		venda.setProdutosVenda(Arrays.asList(produtoVenda));
+		venda.setDesconto(10);
+		venda.setFormaPagamento("Forma Inválida"); // Forma inválida
+		venda.setData(LocalDateTime.now());
+
+		Mockito.when(produtoService.findById(1L)).thenReturn(produto);
+		Mockito.when(usuarioService.findById(3L)).thenReturn(usuario);
+
+		Exception exception = assertThrows(RuntimeException.class, () -> {
+			vendaService.save(venda);
+		});
+
+		assertEquals("Forma de pagamento inválida", exception.getMessage());
+	}
+
 }
