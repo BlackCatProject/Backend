@@ -48,47 +48,18 @@ public class VendaService {
 		this.vendaRepository.save(venda);
 		return "Venda salva com sucesso";
 	}
-	
+
 	private void validarVenda(Venda venda) {
-	    // Verificar se o usuário está ativo
-	    if (venda.getUsuario() == null || !venda.getUsuario().isAtivo()) {
-	        throw new RuntimeException("Erro: " + venda.getUsuario().getNome() + " foi desativado");
-	    }
+		// Verificar se o usuário está ativo
+		if (venda.getUsuario() == null || !venda.getUsuario().isAtivo()) {
+			throw new RuntimeException("Erro: " + venda.getUsuario().getNome() + " foi desativado");
+		}
 
-	    // Verificar se a lista de produtos não está vazia
-	    if (venda.getProdutosVenda() == null || venda.getProdutosVenda().isEmpty()) {
-	        throw new RuntimeException("A lista de produtos não pode estar vazia");
-	    }
-
-	    // Verificar se todos os produtos estão ativos
-	    for (ProdutoVenda produtoVenda : venda.getProdutosVenda()) {
-	        Produto produto = produtoService.findById(produtoVenda.getProduto().getId());
-	        if (!produto.isAtivo()) {
-	            throw new RuntimeException("Produto inativo, venda não permitida");
-	        }
-	        produtoVenda.setProduto(produto); // Atualizar o ProdutoVenda com o produto encontrado
-	    }
-
-	    // Verificar se a data da venda não está no futuro
-	    if (venda.getData() == null || venda.getData().isAfter(LocalDateTime.now())) {
-	        throw new RuntimeException("Venda com data no futuro não permitida");
-	    }
-	    
-	    if (venda.getProdutosVenda() != null) {
-	        for (ProdutoVenda produtoVenda : venda.getProdutosVenda()) {
-	            if (produtoVenda.getQuantidade() <= 0) {
-	                throw new RuntimeException("Quantidade do produto inválida");
-	            }
-	            produtoVenda.setVenda(venda);
-	        }
-	    }
-	    List<String> formasPagamentoValidas = Arrays.asList("Cartão de Débito", "Cartão de Crédito", "Dinheiro", "Pix");
-	    if (!formasPagamentoValidas.contains(venda.getFormaPagamento())) {
-	        throw new RuntimeException("Forma de pagamento inválida");
-	    }
+		List<String> formasPagamentoValidas = Arrays.asList("Cartão de Débito", "Cartão de Crédito", "Dinheiro", "Pix");
+		if (!formasPagamentoValidas.contains(venda.getFormaPagamento())) {
+			throw new RuntimeException("Forma de pagamento inválida");
+		}
 	}
-
-
 
 	public String update(Venda venda, long id) {
 
@@ -117,10 +88,14 @@ public class VendaService {
 	private Venda registrarVenda(Venda venda) {
 
 		// Verificar se o usuário está ativo no banco de dados
-		Usuario usuario = usuarioService.findById(venda.getUsuario().getId()); 
-		
-		if(usuario == null) {
+		Usuario usuario = usuarioService.findById(venda.getUsuario().getId());
+
+		if (usuario == null) {
 			throw new RuntimeException("Usuario não encontrado");
+		}
+		// Verificar se a lista de produtos não está vazia
+		if (venda.getProdutosVenda() == null || venda.getProdutosVenda().isEmpty()) {
+			throw new RuntimeException("A lista de produtos não pode estar vazia");
 		}
 
 		if (!usuario.isAtivo()) {
@@ -136,7 +111,7 @@ public class VendaService {
 		return venda;
 	}
 
-	private Venda atualizarVenda(Venda venda, long id) {
+	public Venda atualizarVenda(Venda venda, long id) {
 
 		if (!venda.getUsuario().isAtivo()) {
 			throw new RuntimeException("Erro: " + venda.getUsuario().getNome() + " foi desativado");
