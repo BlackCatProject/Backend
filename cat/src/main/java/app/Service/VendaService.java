@@ -9,6 +9,8 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Random;
 
+import javax.management.RuntimeErrorException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -27,13 +29,13 @@ public class VendaService {
 	@Autowired
 	private ProdutoService produtoService;
 	@Autowired
-	private UsuarioRepository usuarioRepository;
+	private UsuarioService usuarioService;
 
 	public String save(Venda venda) {
-		validarVenda(venda);
 
 		venda = registrarVenda(venda);
 
+		validarVenda(venda);
 		// toda vez que tiver um relacionamento @onetomany e que vc salva em cascata,
 		// precisa fazer isso pra não ficar nula a chave estrangeira da venda no produto
 		// venda
@@ -80,7 +82,7 @@ public class VendaService {
 	            produtoVenda.setVenda(venda);
 	        }
 	    }
-	    List<String> formasPagamentoValidas = Arrays.asList("Cartão de Débito", "Cartão de Crédito", "Dinheiro", "Cheque");
+	    List<String> formasPagamentoValidas = Arrays.asList("Cartão de Débito", "Cartão de Crédito", "Dinheiro", "Pix");
 	    if (!formasPagamentoValidas.contains(venda.getFormaPagamento())) {
 	        throw new RuntimeException("Forma de pagamento inválida");
 	    }
@@ -115,8 +117,11 @@ public class VendaService {
 	private Venda registrarVenda(Venda venda) {
 
 		// Verificar se o usuário está ativo no banco de dados
-		Usuario usuario = usuarioRepository.findById(venda.getUsuario().getId())
-				.orElseThrow(() -> new RuntimeException("Usuário não encontrado")); // arrumar e nao usar ->
+		Usuario usuario = usuarioService.findById(venda.getUsuario().getId()); 
+		
+		if(usuario == null) {
+			throw new RuntimeException("Usuario não encontrado");
+		}
 
 		if (!usuario.isAtivo()) {
 			throw new RuntimeException("Erro: " + usuario.getNome() + " foi desativado");

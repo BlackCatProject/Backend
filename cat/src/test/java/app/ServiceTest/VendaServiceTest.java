@@ -64,7 +64,7 @@ public class VendaServiceTest {
 		produto01.setPreco(99.99);
 		produto01.setAtivo(true);
 
-		// venda
+		// vendat
 		Venda venda01 = new Venda();
 		venda01.setId(1L);
 		venda01.setData(LocalDateTime.now());
