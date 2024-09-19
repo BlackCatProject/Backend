@@ -487,10 +487,9 @@ public class VendaServiceTest {
 
 		Mockito.when(vendaRepository.findById(idInexistente)).thenReturn(Optional.empty());
 
-		Venda result = vendaService.findById(idInexistente);
-
-		assertNull(result);
-		Mockito.verify(vendaRepository, Mockito.times(1)).findById(idInexistente);
+		assertThrows(RuntimeException.class, ()->{
+			vendaService.findById(idInexistente);
+		});
 	}
 
 	@Test
@@ -519,7 +518,7 @@ public class VendaServiceTest {
 			vendaService.atualizarVenda(vendaMock, 1L);
 		});
 
-		assertEquals("Erro: João foi desativado", thrown.getMessage());
+		assertEquals("Erro: "+ usuarioMock.getNome()+" foi desativado", thrown.getMessage());
 	}
 
 }

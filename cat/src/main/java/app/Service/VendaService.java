@@ -72,8 +72,9 @@ public class VendaService {
 		Optional<Venda> optional = this.vendaRepository.findById(id);
 		if (optional.isPresent()) {
 			return optional.get();
-		} else
-			return null;
+		} else {
+			throw new RuntimeException("Venda não encontrada");
+		}
 	}
 
 	public List<Venda> findAll() {
@@ -117,7 +118,7 @@ public class VendaService {
 			throw new RuntimeException("Erro: " + venda.getUsuario().getNome() + " foi desativado");
 		}
 
-		Venda vendaInDb = findById(id);
+		Venda vendaInDb = this.findById(id);
 		venda.setId(id);
 		venda.setProdutosVenda(this.verificarProdutos(venda.getProdutosVenda()));
 		venda.setData(vendaInDb.getData());
