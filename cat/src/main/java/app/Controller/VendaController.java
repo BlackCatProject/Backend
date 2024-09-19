@@ -1,9 +1,10 @@
 package app.Controller;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeParseException;
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -15,9 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
 import app.Entity.Venda;
-import app.Repository.UsuarioRepository;
 import app.Service.VendaService;
 
 @RestController
@@ -72,23 +71,28 @@ public class VendaController {
 			String msn = this.vendaService.delete(id);
 			return new ResponseEntity<>(msn, HttpStatus.OK);
 		} catch (Exception e) {
-			return new ResponseEntity<>("Erro: " + e.getMessage(), HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 
 	}
 
-	// exemplo pra buscar ->
+	
 	// api/venda/findByData?startDate=2024-08-18T00:00:00&endDate=2024-08-18T23:59:59
 	@GetMapping("/findByData")
-	public ResponseEntity<List<Venda>> findByDataBetween(@RequestParam("startDate") String startDateStr,
-			@RequestParam("endDate") String endDateStr) {
+	public ResponseEntity<List<Venda>> findByDataBetween(
+// indica que startDate e endDate será extraído da URL da solicitação.
+			@RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
+			@RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate) {
+		if (startDate.isAfter(endDate)) {
+			return ResponseEntity.badRequest().body(null);// Garante que startDate não seja depois de endDate.
+		}
 		try {
-			LocalDateTime startDate = LocalDateTime.parse(startDateStr);
-			LocalDateTime endDate = LocalDateTime.parse(endDateStr);
-			List<Venda> vendas = this.vendaService.findByData(startDate, endDate);
-			return new ResponseEntity<>(vendas, HttpStatus.OK);
+			List<Venda> vendas = vendaService.findByData(startDate, endDate);
+			return ResponseEntity.ok(vendas);
+		} catch (DateTimeParseException e) {
+			return ResponseEntity.badRequest().body(null);
 		} catch (Exception e) {
-			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
 		}
 	}
 

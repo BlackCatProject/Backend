@@ -32,4 +32,9 @@ public class ProdutoVenda {
 	@ManyToOne
 	@JsonIgnoreProperties("produtosVenda")
 	private Produto produto;
+	
+	 public ProdutoVenda(Produto produto, int quantidade) {
+	        this.produto = produto;
+	        this.quantidade = quantidade;
+	    }
 }

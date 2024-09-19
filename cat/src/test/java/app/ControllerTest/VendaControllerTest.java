@@ -49,13 +49,9 @@ public class VendaControllerTest {
 
 	@BeforeEach
 	void setUp() {
-		
-		String startDateStr = "2024-08-18T00:00:00";
-		String endDateStr = "2024-09-18T23:59:59";
 
-		LocalDateTime startDate = LocalDateTime.parse(startDateStr);
-		LocalDateTime endDate = LocalDateTime.parse(endDateStr);
-
+		LocalDateTime startDate = LocalDateTime.of(2024, 9, 1, 00, 00);
+		LocalDateTime endDate = LocalDateTime.of(2024, 9, 31, 23, 59);
 
 		Usuario usuario = new Usuario(1, "Marcela Garcia", "Marci", "Senha123", Role.FUNCIONARIO, true, null);
 
@@ -84,7 +80,6 @@ public class VendaControllerTest {
 
 		vendas.add(venda);
 		vendas.add(venda2);
-		
 
 		Mockito.when(vendaRepository.save(Mockito.any())).thenReturn(venda);
 
@@ -93,15 +88,15 @@ public class VendaControllerTest {
 		Mockito.when(vendaRepository.findById(0L)).thenReturn(Optional.ofNullable(null));
 
 		Mockito.when(vendaRepository.findAll()).thenReturn(vendas);
-		
-		Mockito.when(vendaRepository.findByDataBetween(any(), any())).thenReturn(vendas);
+
+		Mockito.when(vendaRepository.findByDataBetween(startDate, endDate)).thenReturn(vendas);
 
 		Mockito.when(usuarioService.findById(1)).thenReturn(usuario);
 
 		Mockito.when(usuarioService.findById(0)).thenReturn(null);
 
 		Mockito.when(produtoService.findById(1)).thenReturn(produtoBanana);
-		
+
 		doNothing().when(vendaRepository).deleteById(anyLong());
 
 		doThrow(new RuntimeException("Venda não encontrada")).when(vendaRepository).deleteById(0L);
@@ -238,8 +233,8 @@ public class VendaControllerTest {
 	@DisplayName("Integração - findByData da venda")
 	void cenarioFindVendaByData() {
 
-		String startDate = "2024-08-18T00:00:00";
-		String endDate = "2024-09-18T23:59:59";
+		LocalDateTime startDate = LocalDateTime.of(2024, 9, 1, 00, 00);
+		LocalDateTime endDate = LocalDateTime.of(2024, 9, 31, 23, 59);
 
 		ResponseEntity<List<Venda>> retorno = this.vendaController.findByDataBetween(startDate, endDate);
 
@@ -248,19 +243,6 @@ public class VendaControllerTest {
 		assertEquals(2, venda.size());
 		assertEquals(HttpStatus.OK, retorno.getStatusCode());
 
-	}
-	
-	@Test
-	@DisplayName("Integração - findByData da venda String com formatação incorreta")
-	void cenarioFindVendaByDataError() {
-		
-		String startDate = "2yuyljyl";
-		String endDate = "2uguyp";
-		
-		assertThrows(Exception.class, ()-> {
-			this.vendaController.findByDataBetween(startDate, endDate);
-		});
-		
 	}
 
 }

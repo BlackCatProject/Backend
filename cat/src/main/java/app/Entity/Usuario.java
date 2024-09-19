@@ -51,10 +51,22 @@ public class Usuario {
 	public enum Role {
 		GESTOR, FUNCIONARIO;
 	}
+	
+	
+    public Usuario(long id, String nome, String login, String senha, Role role, boolean ativo) {
+        this.id = id;
+        this.nome = nome;
+        this.login = login;
+        this.senha = senha;
+        this.role = role;
+        this.ativo = ativo;
+    }
+
 
 	@OneToMany(mappedBy = "usuario")
 	@JsonIgnoreProperties("usuario")
 	private List<Venda> vendas;
 
+	
 
 }
