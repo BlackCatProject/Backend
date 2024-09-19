@@ -280,8 +280,9 @@ public class VendaControllerTest {
 		
 	}
 	
+	
 	@Test
-	@DisplayName("Integração - find da venda por mes e ano - mes inavalido")
+	@DisplayName("Integração - find da venda por mes e ano - mes invalido")
 	void cenarioVendaByMonthAndYearMesInvalido() {
 		
 		ResponseEntity<List<Venda>> retorno = this.vendaController.findByMonthAndYear(2024, 13);
@@ -300,10 +301,10 @@ public class VendaControllerTest {
 	}
 	
 	@Test
-	@DisplayName("Integração - find da venda por mes e ano - mes posterior ao atual")
+	@DisplayName("Integração - find da venda por mes e ano - ano posterior ao atual")
 	void cenarioVendaByMonthAndYearAnoPosterior() {
 		
-		ResponseEntity<List<Venda>> retorno = this.vendaController.findByMonthAndYear(10, 2025);
+		ResponseEntity<List<Venda>> retorno = this.vendaController.findByMonthAndYear(9, 2025);
 		
 		assertEquals(HttpStatus.BAD_REQUEST, retorno.getStatusCode());
 		
