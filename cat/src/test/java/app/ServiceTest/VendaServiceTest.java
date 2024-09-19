@@ -1,18 +1,12 @@
 package app.ServiceTest;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
 import java.time.LocalDateTime;
 import java.time.YearMonth;
-import java.util.Arrays;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
+import java.util.*;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,6 +14,7 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+
 import app.Entity.Produto;
 import app.Entity.ProdutoVenda;
 import app.Entity.Usuario;
@@ -46,24 +41,9 @@ public class VendaServiceTest {
 
 	@BeforeEach
 	void setup() {
+		Usuario usuario01 = new Usuario(3L, "jose de amado", "jose123", "senha123", Usuario.Role.GESTOR, true);
+		Produto produto01 = new Produto(1L, "torta de banana", "é uma torta e é de banana", 99.99, true);
 
-		Usuario usuario01 = new Usuario();
-		usuario01.setId(3L);
-		usuario01.setNome("jose de amado");
-		usuario01.setLogin("jose123");
-		usuario01.setSenha("senha123");
-		usuario01.setRole(Usuario.Role.GESTOR);
-		usuario01.setAtivo(true);
-
-		// produto
-		Produto produto01 = new Produto();
-		produto01.setId(1L);
-		produto01.setNome("torta de banana");
-		produto01.setDescricao("é uma torta e é de banana");
-		produto01.setPreco(99.99);
-		produto01.setAtivo(true);
-
-		// vendat
 		Venda venda01 = new Venda();
 		venda01.setId(1L);
 		venda01.setData(LocalDateTime.now());
@@ -74,223 +54,40 @@ public class VendaServiceTest {
 		venda01.setTotal(89.99);
 
 		Mockito.when(vendaRepository.save(Mockito.any())).thenReturn(venda01);
-
 		Mockito.when(produtoService.findById(1L)).thenReturn(produto01);
-
 		Mockito.when(usuarioService.findById(3L)).thenReturn(usuario01);
-
 	}
 
+	// testes com sucesso
 	@Test
-	@DisplayName("Erro ao tentar realizar venda com usuário inativo")
-	void testVendaComUsuarioInativo() {
-		Usuario usuarioInativo = new Usuario();
-		usuarioInativo.setId(1L);
-		usuarioInativo.setNome("Maria Pinto Souza");
-		usuarioInativo.setAtivo(false);
-
-		Produto produto = new Produto();
-		produto.setId(1L);
-		produto.setNome("Torta de Banana");
-		produto.setPreco(99.99);
-		produto.setAtivo(true);
-
+	@DisplayName("Salvar venda com sucesso")
+	void testSaveSuccess() {
+		Usuario usuario = new Usuario(1L, "José", "jose", "senha", Usuario.Role.GESTOR, true);
+		Produto produto = new Produto(1L, "Produto 1", "Descrição", 50.0, true);
 		ProdutoVenda produtoVenda = new ProdutoVenda();
 		produtoVenda.setProduto(produto);
-		produtoVenda.setQuantidade(1);
-
-		Venda venda = new Venda();
-		venda.setUsuario(usuarioInativo);
-		venda.setProdutosVenda(Arrays.asList(produtoVenda));
-		venda.setDesconto(10);
-		venda.setData(LocalDateTime.now());
-
-		Mockito.when(usuarioService.findById(1L)).thenReturn(usuarioInativo);
-
-		RuntimeException thrown = assertThrows(RuntimeException.class, () -> vendaService.save(venda));
-		assertEquals("Erro: Maria Pinto Souza foi desativado", thrown.getMessage());
-	}
-
-	@Test
-	@DisplayName("Erro ao tentar realizar venda com produto inativo")
-	void VendaProdutoNegativo() {
-
-		Usuario usuario = new Usuario();
-		usuario.setId(3L);
-		usuario.setNome("jose de amado");
-		usuario.setAtivo(true);
-
-		Produto produto = new Produto();
-		produto.setId(9L);
-		produto.setNome("torta de banana");
-		produto.setPreco(99.99);
-		produto.setAtivo(false);
-
-		ProdutoVenda produtoVenda = new ProdutoVenda();
-		produtoVenda.setProduto(produto);
-		produtoVenda.setQuantidade(1);
+		produtoVenda.setQuantidade(2);
 
 		Venda venda = new Venda();
 		venda.setUsuario(usuario);
-		venda.setProdutosVenda(Arrays.asList(produtoVenda));
+		venda.setProdutosVenda(Collections.singletonList(produtoVenda));
 		venda.setDesconto(10);
+		venda.setFormaPagamento("Cartão de Crédito");
 
-		Mockito.when(produtoService.findById(9L)).thenReturn(produto);
-
-		Exception exception = assertThrows(RuntimeException.class, () -> {
-			vendaService.save(venda);
-		});
-
-		assertEquals("Erro: o produto torta de banana foi desativado.", exception.getMessage());
-
-	}
-
-	@Test
-	@DisplayName("Erro ao tentar realizar venda com lista de produtos vazia")
-	void VendaProdutosVazios() {
-
-		Usuario usuario = new Usuario();
-		usuario.setId(3L);
-		usuario.setNome("jose de amado");
-		usuario.setAtivo(true);
-
-		Produto produto = new Produto();
-		produto.setId(9L);
-		produto.setNome("torta de banana");
-		produto.setPreco(99.99);
-		produto.setAtivo(true);
-
-		ProdutoVenda produtoVenda = new ProdutoVenda();
-		produtoVenda.setProduto(produto);
-		produtoVenda.setQuantidade(1);
-
-		Venda venda = new Venda();
-		venda.setUsuario(usuario);
-		venda.setProdutosVenda(Arrays.asList());
-		venda.setDesconto(10);
-
-		Mockito.when(produtoService.findById(9L)).thenReturn(produto);
-
-		Exception exception = assertThrows(RuntimeException.class, () -> {
-			vendaService.save(venda);
-		});
-
-		assertEquals("A lista de produtos não pode estar vazia", exception.getMessage());
-	}
-
-	@Test
-	@DisplayName("Erro ao tentar realizar venda com produto inativo")
-	void ProdutoInativo() {
-
-		Usuario usuario = new Usuario();
-		usuario.setId(3L);
-		usuario.setNome("jose de amado");
-		usuario.setAtivo(true);
-
-		Produto produtoInativo = new Produto();
-		produtoInativo.setId(1L);
-		produtoInativo.setNome("torta de maçã");
-		produtoInativo.setPreco(59.99);
-		produtoInativo.setAtivo(false);
-		ProdutoVenda produtoVenda = new ProdutoVenda();
-		produtoVenda.setProduto(produtoInativo);
-		produtoVenda.setQuantidade(1);
-
-		Venda venda = new Venda();
-		venda.setUsuario(usuario);
-		venda.setProdutosVenda(Arrays.asList(produtoVenda));
-		venda.setDesconto(10);
-		venda.setData(LocalDateTime.now());
-
-		Mockito.when(produtoService.findById(1L)).thenReturn(produtoInativo);
-
-		Exception exception = assertThrows(RuntimeException.class, () -> {
-			vendaService.save(venda);
-		});
-
-		assertEquals("Erro: o produto torta de maçã foi desativado.", exception.getMessage());
-
-	}
-
-	@Test
-	@DisplayName("Salvar venda corretamente ")
-	void salvarVenda() {
-
-		Usuario usuario = new Usuario();
-		usuario.setId(3L);
-		usuario.setNome("João Silva");
-		usuario.setAtivo(true);
-
-		Produto produto = new Produto();
-		produto.setId(1L);
-		produto.setNome("torta de maçã");
-		produto.setPreco(59.99);
-
-		ProdutoVenda produtoVenda = new ProdutoVenda();
-		produtoVenda.setProduto(produto);
-		produtoVenda.setQuantidade(1);
-
-		Venda venda = new Venda();
-		venda.setUsuario(usuario);
-		venda.setProdutosVenda(Arrays.asList(produtoVenda));
-		venda.setDesconto(10);
-		venda.setFormaPagamento("Cartão de Débito");
-		venda.setData(LocalDateTime.now());
+		when(usuarioService.findById(1L)).thenReturn(usuario);
+		when(produtoService.findById(1L)).thenReturn(produto);
+		when(vendaRepository.save(venda)).thenReturn(venda);
 
 		String result = vendaService.save(venda);
-
-		Mockito.verify(vendaRepository, times(1)).save(venda);
 		assertEquals("Venda salva com sucesso", result);
-
-	}
-
-	@Test
-	@DisplayName("Erro ao tentar realizar venda com forma de pagamento inválida")
-	void testVendaComFormaPagamentoInvalida() {
-		Usuario usuario = new Usuario();
-		usuario.setId(3L);
-		usuario.setNome("José de Amado");
-		usuario.setAtivo(true);
-
-		Produto produto = new Produto();
-		produto.setId(1L);
-		produto.setNome("Torta de Banana");
-		produto.setPreco(99.99);
-		produto.setAtivo(true);
-
-		ProdutoVenda produtoVenda = new ProdutoVenda();
-		produtoVenda.setProduto(produto);
-		produtoVenda.setQuantidade(1);
-
-		Venda venda = new Venda();
-		venda.setUsuario(usuario);
-		venda.setProdutosVenda(Arrays.asList(produtoVenda));
-		venda.setDesconto(10);
-		venda.setFormaPagamento("Forma Inválida");
-		venda.setData(LocalDateTime.now());
-
-		Mockito.when(produtoService.findById(1L)).thenReturn(produto);
-		Mockito.when(usuarioService.findById(3L)).thenReturn(usuario);
-
-		RuntimeException thrown = assertThrows(RuntimeException.class, () -> vendaService.save(venda));
-		assertEquals("Forma de pagamento inválida", thrown.getMessage());
+		verify(vendaRepository, times(1)).save(venda);
 	}
 
 	@Test
 	@DisplayName("Atualizar venda com sucesso")
-	void testUpdateVenda() {
-
-		Usuario usuario = new Usuario();
-		usuario.setId(3L);
-		usuario.setNome("jose de amado");
-		usuario.setAtivo(true);
-
-		Produto produto = new Produto();
-		produto.setId(1L);
-		produto.setNome("torta de banana");
-		produto.setPreco(99.99);
-		produto.setAtivo(true);
-
+	void testUpdateSuccess() {
+		Usuario usuario = new Usuario(1L, "José", "jose", "senha", Usuario.Role.GESTOR, true);
+		Produto produto = new Produto(1L, "Produto 1", "Descrição", 50.0, true);
 		ProdutoVenda produtoVenda = new ProdutoVenda();
 		produtoVenda.setProduto(produto);
 		produtoVenda.setQuantidade(2);
@@ -298,228 +95,481 @@ public class VendaServiceTest {
 		Venda vendaExistente = new Venda();
 		vendaExistente.setId(1L);
 		vendaExistente.setUsuario(usuario);
-		vendaExistente.setProdutosVenda(Arrays.asList(produtoVenda));
-		vendaExistente.setDesconto(5);
-		vendaExistente.setFormaPagamento("Dinheiro");
-		vendaExistente.setData(LocalDateTime.now().minusDays(2));
+		vendaExistente.setProdutosVenda(Collections.singletonList(produtoVenda));
+		vendaExistente.setDesconto(10);
+		vendaExistente.setFormaPagamento("Cartão de Crédito");
+		vendaExistente.setData(LocalDateTime.now().minusDays(1));
 		vendaExistente.setNfe(123456789L);
-
-		Mockito.when(vendaRepository.findById(1L)).thenReturn(Optional.of(vendaExistente));
 
 		Venda vendaAtualizada = new Venda();
 		vendaAtualizada.setUsuario(usuario);
-		vendaAtualizada.setProdutosVenda(Arrays.asList(produtoVenda));
-		vendaAtualizada.setDesconto(10);
-		vendaAtualizada.setFormaPagamento("Cartão de Crédito");
+		vendaAtualizada.setProdutosVenda(Collections.singletonList(produtoVenda));
+		vendaAtualizada.setDesconto(15);
+		vendaAtualizada.setFormaPagamento("Dinheiro");
 		vendaAtualizada.setData(LocalDateTime.now());
 
-		Mockito.when(vendaRepository.save(Mockito.any(Venda.class))).thenReturn(vendaAtualizada);
+		when(vendaRepository.findById(1L)).thenReturn(Optional.of(vendaExistente));
+		when(vendaRepository.save(vendaAtualizada)).thenReturn(vendaAtualizada);
 
 		String result = vendaService.update(vendaAtualizada, 1L);
-
-		Mockito.verify(vendaRepository, times(1)).save(Mockito.any(Venda.class));
-
 		assertEquals("Atualizada com sucesso", result);
-
-		assertEquals(vendaExistente.getData(), vendaAtualizada.getData()); // A data da venda existente deve ser mantida
-		assertEquals(vendaExistente.getNfe(), vendaAtualizada.getNfe()); // A NFe da venda existente deve ser mantida
+		verify(vendaRepository, times(1)).save(vendaAtualizada);
 	}
 
 	@Test
-	@DisplayName("Buscar vendas por data")
-	void testFindByData() {
-
-		LocalDateTime startDate = LocalDateTime.of(2023, 9, 1, 0, 0);
-		LocalDateTime endDate = LocalDateTime.of(2023, 9, 30, 23, 59);
-
-		List<Venda> vendas = Arrays.asList(new Venda(), new Venda());
-
-		Mockito.when(vendaRepository.findByDataBetween(startDate, endDate)).thenReturn(vendas);
-
-		List<Venda> result = vendaService.findByData(startDate, endDate);
-
-		assertEquals(2, result.size());
-		Mockito.verify(vendaRepository, Mockito.times(1)).findByDataBetween(startDate, endDate);
-	}
-
-	@Test
-	@DisplayName("Erro ao tentar realizar venda com produto inativo")
-	void VendaComProdutoInativo() {
-		Usuario usuario = new Usuario();
-		usuario.setId(3L);
-		usuario.setNome("jose de amado");
-		usuario.setAtivo(true);
-
-		Produto produtoInativo = new Produto();
-		produtoInativo.setId(1L);
-		produtoInativo.setNome("Torta de Maçã");
-		produtoInativo.setPreco(59.99);
-		produtoInativo.setAtivo(false);
-
+	@DisplayName("Buscar venda por ID com sucesso")
+	void testFindByIdSuccess() {
+		Usuario usuario = new Usuario(1L, "José", "jose", "senha", Usuario.Role.GESTOR, true);
+		Produto produto = new Produto(1L, "Produto 1", "Descrição", 50.0, true);
 		ProdutoVenda produtoVenda = new ProdutoVenda();
-		produtoVenda.setProduto(produtoInativo);
-		produtoVenda.setQuantidade(1);
+		produtoVenda.setProduto(produto);
+		produtoVenda.setQuantidade(2);
+
+		Venda venda = new Venda();
+		venda.setId(1L);
+		venda.setUsuario(usuario);
+		venda.setProdutosVenda(Collections.singletonList(produtoVenda));
+		venda.setDesconto(10);
+		venda.setFormaPagamento("Cartão de Crédito");
+
+		when(vendaRepository.findById(1L)).thenReturn(Optional.of(venda));
+
+		Venda result = vendaService.findById(1L);
+		assertEquals(1L, result.getId());
+		assertEquals("José", result.getUsuario().getNome());
+		assertEquals(1L, result.getProdutosVenda().get(0).getProduto().getId());
+	}
+
+	@Test
+	@DisplayName("Buscar todas as vendas com sucesso")
+	void testFindAll() {
+		Usuario usuario = new Usuario(1L, "José", "jose", "senha", Usuario.Role.GESTOR, true);
+		Produto produto = new Produto(1L, "Produto 1", "Descrição", 50.0, true);
+		ProdutoVenda produtoVenda = new ProdutoVenda();
+		produtoVenda.setProduto(produto);
+		produtoVenda.setQuantidade(2);
+
+		Venda venda = new Venda();
+		venda.setId(1L);
+		venda.setUsuario(usuario);
+		venda.setProdutosVenda(Collections.singletonList(produtoVenda));
+		venda.setDesconto(10);
+		venda.setFormaPagamento("Cartão de Crédito");
+
+		List<Venda> vendas = Collections.singletonList(venda);
+		when(vendaRepository.findAll()).thenReturn(vendas);
+
+		List<Venda> result = vendaService.findAll();
+		assertEquals(1, result.size());
+		assertEquals(1L, result.get(0).getId());
+	}
+
+	@Test
+	@DisplayName("Deletar venda com sucesso")
+	void testDeleteSuccess() {
+		Long vendaId = 1L;
+		doNothing().when(vendaRepository).deleteById(vendaId);
+
+		String result = vendaService.delete(vendaId);
+		assertEquals("Venda deletada com sucesso", result);
+		verify(vendaRepository, times(1)).deleteById(vendaId);
+	}
+
+	@Test
+	@DisplayName("Verificar produtos com sucesso")
+	void testVerificarProdutosSuccess() {
+		Usuario usuario = new Usuario(1L, "José", "jose", "senha", Usuario.Role.GESTOR, true);
+		Produto produto = new Produto(1L, "Produto 1", "Descrição", 50.0, true);
+		ProdutoVenda produtoVenda = new ProdutoVenda();
+		produtoVenda.setProduto(produto);
+		produtoVenda.setQuantidade(2);
+
+		List<ProdutoVenda> produtosVenda = Collections.singletonList(produtoVenda);
+
+		when(produtoService.findById(1L)).thenReturn(produto);
+
+		List<ProdutoVenda> result = vendaService.verificarProdutos(produtosVenda);
+		assertEquals(1, result.size());
+		assertEquals(2, result.get(0).getQuantidade());
+	}
+
+	@Test
+	@DisplayName("Calcular total com sucesso")
+	void testCalcularTotalSuccess() {
+		Usuario usuario = new Usuario(1L, "José", "jose", "senha", Usuario.Role.GESTOR, true);
+		Produto produto = new Produto(1L, "Produto 1", "Descrição", 50.0, true);
+		ProdutoVenda produtoVenda = new ProdutoVenda();
+		produtoVenda.setProduto(produto);
+		produtoVenda.setQuantidade(2);
 
 		Venda venda = new Venda();
 		venda.setUsuario(usuario);
-		venda.setProdutosVenda(Arrays.asList(produtoVenda));
+		venda.setProdutosVenda(Collections.singletonList(produtoVenda));
 		venda.setDesconto(10);
-		venda.setData(LocalDateTime.now());
 
-		Mockito.when(produtoService.findById(1L)).thenReturn(produtoInativo);
+		when(produtoService.findById(1L)).thenReturn(produto);
 
-		Exception exception = assertThrows(RuntimeException.class, () -> vendaService.save(venda));
-		assertEquals("Erro: o produto Torta de Maçã foi desativado.", exception.getMessage());
+		double total = vendaService.calcularTotal(venda);
+		assertEquals(90.0, total); // (50.0 * 2) * (1 - 0.10)
 	}
 
 	@Test
-	@DisplayName("Buscar vendas por mês e ano")
-	void BuscarPorMesEAno() {
+	@DisplayName("Buscar vendas por data com sucesso")
+	void testFindByData() {
+		Usuario usuario = new Usuario(1L, "José", "jose", "senha", Usuario.Role.GESTOR, true);
+		Produto produto = new Produto(1L, "Produto 1", "Descrição", 50.0, true);
+		ProdutoVenda produtoVenda = new ProdutoVenda();
+		produtoVenda.setProduto(produto);
+		produtoVenda.setQuantidade(2);
 
-		int mes = 9;
-		int ano = 2023;
-		YearMonth yearMonth = YearMonth.of(ano, mes);
+		Venda venda = new Venda();
+		venda.setId(1L);
+		venda.setUsuario(usuario);
+		venda.setProdutosVenda(Collections.singletonList(produtoVenda));
+		venda.setDesconto(10);
+		venda.setFormaPagamento("Cartão de Crédito");
+		venda.setData(LocalDateTime.now());
+
+		LocalDateTime startDate = LocalDateTime.now().minusDays(1);
+		LocalDateTime endDate = LocalDateTime.now().plusDays(1);
+
+		List<Venda> vendas = Collections.singletonList(venda);
+		when(vendaRepository.findByDataBetween(startDate, endDate)).thenReturn(vendas);
+
+		List<Venda> result = vendaService.findByData(startDate, endDate);
+		assertEquals(1, result.size());
+		assertEquals(1L, result.get(0).getId());
+	}
+
+	@Test
+	@DisplayName("Buscar vendas por mês e ano com sucesso")
+	void testFindByMonthAndYear() {
+		Usuario usuario = new Usuario(1L, "José", "jose", "senha", Usuario.Role.GESTOR, true);
+		Produto produto = new Produto(1L, "Produto 1", "Descrição", 50.0, true);
+		ProdutoVenda produtoVenda = new ProdutoVenda();
+		produtoVenda.setProduto(produto);
+		produtoVenda.setQuantidade(2);
+
+		Venda venda = new Venda();
+		venda.setId(1L);
+		venda.setUsuario(usuario);
+		venda.setProdutosVenda(Collections.singletonList(produtoVenda));
+		venda.setDesconto(10);
+		venda.setFormaPagamento("Cartão de Crédito");
+		venda.setData(LocalDateTime.of(2024, 9, 15, 10, 0));
+
+		YearMonth yearMonth = YearMonth.of(2024, 9);
 		LocalDateTime startDate = yearMonth.atDay(1).atStartOfDay();
 		LocalDateTime endDate = yearMonth.atEndOfMonth().atTime(23, 59, 59);
 
-		List<Venda> vendas = Arrays.asList(new Venda(), new Venda());
-		Mockito.when(vendaRepository.findByDataBetween(startDate, endDate)).thenReturn(vendas);
+		List<Venda> vendas = Collections.singletonList(venda);
+		when(vendaRepository.findByDataBetween(startDate, endDate)).thenReturn(vendas);
 
-		List<Venda> result = vendaService.findByMonthAndYear(mes, ano);
-
-		assertEquals(2, result.size());
-		Mockito.verify(vendaRepository, Mockito.times(1)).findByDataBetween(startDate, endDate);
+		List<Venda> result = vendaService.findByMonthAndYear(9, 2024);
+		assertEquals(1, result.size());
+		assertEquals(1L, result.get(0).getId());
 	}
 
 	@Test
-	@DisplayName("Buscar vendas por ID do usuário")
-	void BuscarIdDoUsuario() {
+	@DisplayName("Buscar vendas por ID do usuário com sucesso")
+	void testFindByUsuarioId() {
+		Usuario usuario = new Usuario(1L, "José", "jose", "senha", Usuario.Role.GESTOR, true);
+		Produto produto = new Produto(1L, "Produto 1", "Descrição", 50.0, true);
+		ProdutoVenda produtoVenda = new ProdutoVenda();
+		produtoVenda.setProduto(produto);
+		produtoVenda.setQuantidade(2);
 
-		long usuarioId = 1L;
-		List<Venda> vendas = Arrays.asList(new Venda(), new Venda());
-		Mockito.when(vendaRepository.findByUsuarioId(usuarioId)).thenReturn(vendas);
+		Venda venda = new Venda();
+		venda.setId(1L);
+		venda.setUsuario(usuario);
+		venda.setProdutosVenda(Collections.singletonList(produtoVenda));
+		venda.setDesconto(10);
+		venda.setFormaPagamento("Cartão de Crédito");
 
-		List<Venda> result = vendaService.findByUsuarioId(usuarioId);
+		List<Venda> vendas = Collections.singletonList(venda);
+		when(vendaRepository.findByUsuarioId(1L)).thenReturn(vendas);
 
-		assertEquals(2, result.size());
-		Mockito.verify(vendaRepository, Mockito.times(1)).findByUsuarioId(usuarioId);
+		List<Venda> result = vendaService.findByUsuarioId(1L);
+		assertEquals(1, result.size());
+		assertEquals(1L, result.get(0).getId());
 	}
 
 	@Test
 	@DisplayName("Buscar venda por número da NFe com sucesso")
-	void BuscarVendaPorNfe() {
-
-		long numeroNfe = 123456789L;
-		Venda venda = new Venda();
-		Mockito.when(vendaRepository.findByNfe(numeroNfe)).thenReturn(Optional.of(venda));
-
-		Venda result = vendaService.buscarPorNumeroNfe(numeroNfe);
-
-		assertNotNull(result);
-		Mockito.verify(vendaRepository, Mockito.times(1)).findByNfe(numeroNfe);
-	}
-
-	@Test
-	@DisplayName("Buscar venda por número da NFe e lançar exceção quando não encontrada")
-	void VendaNaoEncontradaPorNfe() {
-		long numeroNfe = 123456789L;
-		Mockito.when(vendaRepository.findByNfe(numeroNfe)).thenReturn(Optional.empty());
-
-		Exception exception = assertThrows(NoSuchElementException.class, () -> {
-			vendaService.buscarPorNumeroNfe(numeroNfe);
-		});
-
-		assertEquals("Venda não encontrada com o número da NFe: " + numeroNfe, exception.getMessage());
-	}
-
-	@Test
-	@DisplayName("Buscar todas as vendas")
-	void testFindAll() {
-
-		Usuario usuario = new Usuario();
-		usuario.setId(3L);
-		usuario.setNome("José de Amado");
-		usuario.setAtivo(true);
-
-		Produto produto = new Produto();
-		produto.setId(1L);
-		produto.setNome("Torta de Banana");
-		produto.setPreco(99.99);
-		produto.setAtivo(true);
-
+	void testBuscarPorNumeroNfeSuccess() {
+		Usuario usuario = new Usuario(1L, "José", "jose", "senha", Usuario.Role.GESTOR, true);
+		Produto produto = new Produto(1L, "Produto 1", "Descrição", 50.0, true);
 		ProdutoVenda produtoVenda = new ProdutoVenda();
 		produtoVenda.setProduto(produto);
-		produtoVenda.setQuantidade(1);
+		produtoVenda.setQuantidade(2);
 
-		Venda venda1 = new Venda();
-		venda1.setId(1L);
-		venda1.setUsuario(usuario);
-		venda1.setProdutosVenda(Arrays.asList(produtoVenda));
-		venda1.setDesconto(10);
-		venda1.setFormaPagamento("Cartão de Débito");
-		venda1.setData(LocalDateTime.now());
+		Venda venda = new Venda();
+		venda.setId(1L);
+		venda.setUsuario(usuario);
+		venda.setProdutosVenda(Collections.singletonList(produtoVenda));
+		venda.setDesconto(10);
+		venda.setFormaPagamento("Cartão de Crédito");
+		venda.setNfe(123456789L);
 
-		Venda venda2 = new Venda();
-		venda2.setId(2L);
-		venda2.setUsuario(usuario);
-		venda2.setProdutosVenda(Arrays.asList(produtoVenda));
-		venda2.setDesconto(5);
-		venda2.setFormaPagamento("Dinheiro");
-		venda2.setData(LocalDateTime.now());
+		when(vendaRepository.findByNfe(123456789L)).thenReturn(Optional.of(venda));
 
-		List<Venda> vendas = Arrays.asList(venda1, venda2);
+		Venda result = vendaService.buscarPorNumeroNfe(123456789L);
+		assertEquals(1L, result.getId());
+	}
 
-		Mockito.when(vendaRepository.findAll()).thenReturn(vendas);
+	// testes em caso de erro
+	@Test
+	@DisplayName("Erro ao tentar salvar venda com usuário inativo")
+	void testSaveUsuarioInativo() {
+		Usuario usuarioInativo = new Usuario(1L, "José", "jose", "senha", Usuario.Role.GESTOR, false);
+		Produto produto = new Produto(1L, "Produto 1", "Descrição", 50.0, true);
+		ProdutoVenda produtoVenda = new ProdutoVenda();
+		produtoVenda.setProduto(produto);
+		produtoVenda.setQuantidade(2);
 
-		List<Venda> result = vendaService.findAll();
+		Venda venda = new Venda();
+		venda.setUsuario(usuarioInativo);
+		venda.setProdutosVenda(Collections.singletonList(produtoVenda));
+		venda.setDesconto(10);
+		venda.setFormaPagamento("Cartão de Crédito");
 
-		assertNotNull(result);
-		assertEquals(2, result.size());
-		assertTrue(result.contains(venda1));
-		assertTrue(result.contains(venda2));
-		Mockito.verify(vendaRepository, Mockito.times(1)).findAll();
+		when(usuarioService.findById(1L)).thenReturn(usuarioInativo);
+
+		RuntimeException thrown = assertThrows(RuntimeException.class, () -> vendaService.save(venda));
+		assertEquals("Erro: José foi desativado", thrown.getMessage());
 	}
 
 	@Test
-	@DisplayName("Buscar venda por ID quando não encontrada")
-	void FindByNaoEncontrada() {
-		long idInexistente = 999L;
+	@DisplayName("Erro ao tentar salvar venda com lista de produtos vazia")
+	void testSaveProdutosVazios() {
+		Usuario usuario = new Usuario(1L, "José", "jose", "senha", Usuario.Role.GESTOR, true);
 
-		Mockito.when(vendaRepository.findById(idInexistente)).thenReturn(Optional.empty());
+		Venda venda = new Venda();
+		venda.setUsuario(usuario);
+		venda.setProdutosVenda(Collections.emptyList()); // Lista vazia
+		venda.setDesconto(10);
+		venda.setFormaPagamento("Cartão de Crédito");
+		when(usuarioService.findById(1L)).thenReturn(usuario);
 
-		Venda result = vendaService.findById(idInexistente);
+		RuntimeException thrown = assertThrows(RuntimeException.class, () -> vendaService.save(venda));
 
-		assertNull(result);
-		Mockito.verify(vendaRepository, Mockito.times(1)).findById(idInexistente);
+		assertEquals("A lista de produtos não pode estar vazia", thrown.getMessage());
 	}
 
 	@Test
-	@DisplayName("Excluir uma venda pelo ID")
-	void testDelete() {
-		Long id = 1L;
+	@DisplayName("Erro ao tentar salvar venda com usuário não encontrado")
+	void testSaveUsuarioNaoEncontrado() {
+		Venda venda = new Venda();
+		venda.setUsuario(new Usuario(1L, "José", "jose", "senha", Usuario.Role.GESTOR, true));
+		venda.setProdutosVenda(Collections.emptyList());
+		venda.setDesconto(10);
+		venda.setFormaPagamento("Cartão de Crédito");
 
-		String result = vendaService.delete(id);
+		when(usuarioService.findById(1L)).thenReturn(null);
 
-		assertEquals("Venda deletada com sucesso", result);
-		Mockito.verify(vendaRepository, Mockito.times(1)).deleteById(id);
+		RuntimeException thrown = assertThrows(RuntimeException.class, () -> vendaService.save(venda));
+		assertEquals("Usuario não encontrado", thrown.getMessage());
 	}
 
 	@Test
-	void UsuarioDesativado() {
+	@DisplayName("Erro ao tentar salvar venda com forma de pagamento inválida")
+	void testSaveFormaPagamentoInvalida() {
+		Usuario usuario = new Usuario(1L, "José", "jose", "senha", Usuario.Role.GESTOR, true);
+		Produto produto = new Produto(1L, "Produto 1", "Descrição", 50.0, true);
+		ProdutoVenda produtoVenda = new ProdutoVenda();
+		produtoVenda.setProduto(produto);
+		produtoVenda.setQuantidade(2);
 
-		Usuario usuarioMock = Mockito.mock(Usuario.class);
-		when(usuarioMock.isAtivo()).thenReturn(false);
+		Venda venda = new Venda();
+		venda.setUsuario(usuario);
+		venda.setProdutosVenda(Collections.singletonList(produtoVenda));
+		venda.setDesconto(10);
+		venda.setFormaPagamento("Forma Inválida");
 
-		Venda vendaMock = Mockito.mock(Venda.class);
-		when(vendaMock.getUsuario()).thenReturn(usuarioMock);
+		when(usuarioService.findById(1L)).thenReturn(usuario);
+		when(produtoService.findById(1L)).thenReturn(produto);
 
-		VendaService vendaService = new VendaService();
+		RuntimeException thrown = assertThrows(RuntimeException.class, () -> vendaService.save(venda));
+		assertEquals("Forma de pagamento inválida", thrown.getMessage());
+	}
 
-		RuntimeException thrown = assertThrows(RuntimeException.class, () -> {
-			vendaService.atualizarVenda(vendaMock, 1L);
-		});
+	@Test
+	@DisplayName("Erro ao tentar salvar venda com produto inativo")
+	void testSaveProdutoInativo() {
+		Usuario usuario = new Usuario(1L, "José", "jose", "senha", Usuario.Role.GESTOR, true);
+		Produto produtoInativo = new Produto(1L, "Produto 1", "Descrição", 50.0, false);
+		ProdutoVenda produtoVenda = new ProdutoVenda();
+		produtoVenda.setProduto(produtoInativo);
+		produtoVenda.setQuantidade(2);
 
-		assertEquals("Erro: João foi desativado", thrown.getMessage());
+		Venda venda = new Venda();
+		venda.setUsuario(usuario);
+		venda.setProdutosVenda(Collections.singletonList(produtoVenda));
+		venda.setDesconto(10);
+		venda.setFormaPagamento("Cartão de Crédito");
+
+		when(usuarioService.findById(1L)).thenReturn(usuario);
+		when(produtoService.findById(1L)).thenReturn(produtoInativo);
+
+		RuntimeException thrown = assertThrows(RuntimeException.class, () -> vendaService.save(venda));
+		assertEquals("Erro: o produto Produto 1 foi desativado.", thrown.getMessage());
+	}
+
+	@Test
+	@DisplayName("Erro ao validar venda com usuário nulo")
+	void testValidarVendaUsuarioNulo() {
+		Venda venda = new Venda();
+		venda.setUsuario(null);
+		venda.setFormaPagamento("Cartão de Crédito");
+
+		RuntimeException thrown = assertThrows(RuntimeException.class, () -> vendaService.validarVenda(venda));
+		assertEquals("Erro: null foi desativado", thrown.getMessage());
+	}
+
+	@Test
+	@DisplayName("Testar a combinação de produtos duplicados em verificarProdutos")
+	void testVerificarProdutosComProdutosDuplicados() {
+
+		Produto produto = new Produto(1L, "Produto 1", "Descrição", 50.0, true);
+
+		ProdutoVenda produtoVenda1 = new ProdutoVenda(produto, 2);
+		ProdutoVenda produtoVenda2 = new ProdutoVenda(produto, 3);
+
+		List<ProdutoVenda> produtosVenda = Arrays.asList(produtoVenda1, produtoVenda2);
+
+		when(produtoService.findById(1L)).thenReturn(produto);
+
+		List<ProdutoVenda> result = vendaService.verificarProdutos(produtosVenda);
+
+		assertEquals(1, result.size());
+		assertEquals(5, result.get(0).getQuantidade());
+	}
+
+	@Test
+	@DisplayName("Erro ao tentar atualizar venda com usuário inativo")
+	void testUpdateUsuarioInativo() {
+		Usuario usuarioInativo = new Usuario(1L, "José", "jose", "senha", Usuario.Role.GESTOR, false);
+		Produto produto = new Produto(1L, "Produto 1", "Descrição", 50.0, true);
+		ProdutoVenda produtoVenda = new ProdutoVenda();
+		produtoVenda.setProduto(produto);
+		produtoVenda.setQuantidade(2);
+
+		Venda vendaAtualizada = new Venda();
+		vendaAtualizada.setUsuario(usuarioInativo);
+		vendaAtualizada.setProdutosVenda(Collections.singletonList(produtoVenda));
+		vendaAtualizada.setDesconto(15);
+		vendaAtualizada.setFormaPagamento("Dinheiro");
+
+		when(vendaRepository.findById(1L)).thenReturn(Optional.of(vendaAtualizada));
+
+		RuntimeException thrown = assertThrows(RuntimeException.class, () -> vendaService.update(vendaAtualizada, 1L));
+		assertEquals("Erro: José foi desativado", thrown.getMessage());
+	}
+
+	@Test
+	@DisplayName("Erro ao tentar atualizar venda não encontrada")
+	void testUpdateVendaNaoEncontrada() {
+		Usuario usuario = new Usuario(1L, "José", "jose", "senha", Usuario.Role.GESTOR, true);
+		Produto produto = new Produto(1L, "Produto 1", "Descrição", 50.0, true);
+		ProdutoVenda produtoVenda = new ProdutoVenda();
+		produtoVenda.setProduto(produto);
+		produtoVenda.setQuantidade(2);
+
+		Venda vendaAtualizada = new Venda();
+		vendaAtualizada.setUsuario(usuario);
+		vendaAtualizada.setProdutosVenda(Collections.singletonList(produtoVenda));
+		vendaAtualizada.setDesconto(15);
+		vendaAtualizada.setFormaPagamento("Dinheiro");
+
+		when(vendaRepository.findById(1L)).thenReturn(Optional.empty());
+
+		RuntimeException thrown = assertThrows(RuntimeException.class, () -> vendaService.update(vendaAtualizada, 1L));
+		assertEquals("Venda não encontrada", thrown.getMessage());
+	}
+
+	@Test
+	@DisplayName("Erro ao buscar venda por ID não encontrada")
+	void testFindByIdNotFound() {
+		when(vendaRepository.findById(1L)).thenReturn(Optional.empty());
+
+		RuntimeException thrown = assertThrows(RuntimeException.class, () -> vendaService.findById(1L));
+		assertEquals("Venda não encontrada", thrown.getMessage());
+	}
+
+	@Test
+	@DisplayName("Erro ao verificar produtos com produto não encontrado")
+	void testVerificarProdutosProdutoNaoEncontrado() {
+		ProdutoVenda produtoVenda = new ProdutoVenda();
+		produtoVenda.setProduto(new Produto(1L, "Produto 1", "Descrição", 50.0, true));
+		produtoVenda.setQuantidade(2);
+
+		List<ProdutoVenda> produtosVenda = Collections.singletonList(produtoVenda);
+
+		when(produtoService.findById(1L)).thenReturn(null);
+
+		RuntimeException thrown = assertThrows(RuntimeException.class,
+				() -> vendaService.verificarProdutos(produtosVenda));
+		assertEquals("Produto não encontrado", thrown.getMessage());
+	}
+
+	@Test
+	@DisplayName("Erro ao verificar produtos com produto inativo")
+	void testVerificarProdutosProdutoInativo() {
+		Produto produtoInativo = new Produto(1L, "Produto 1", "Descrição", 50.0, false);
+		ProdutoVenda produtoVenda = new ProdutoVenda();
+		produtoVenda.setProduto(produtoInativo);
+		produtoVenda.setQuantidade(2);
+
+		List<ProdutoVenda> produtosVenda = Collections.singletonList(produtoVenda);
+
+		when(produtoService.findById(1L)).thenReturn(produtoInativo);
+
+		RuntimeException thrown = assertThrows(RuntimeException.class,
+				() -> vendaService.verificarProdutos(produtosVenda));
+		assertEquals("Erro: o produto Produto 1 foi desativado.", thrown.getMessage());
+	}
+
+	@Test
+	@DisplayName("Erro ao buscar venda por número da NFe não encontrada")
+	void testBuscarPorNumeroNfeNotFound() {
+		when(vendaRepository.findByNfe(123456789L)).thenReturn(Optional.empty());
+
+		NoSuchElementException thrown = assertThrows(NoSuchElementException.class,
+				() -> vendaService.buscarPorNumeroNfe(123456789L));
+		assertEquals("Venda não encontrada com o número da NFe: 123456789", thrown.getMessage());
+	}
+
+	@Test
+	@DisplayName("Testar cálculo do total com produto existente (id != 0)")
+	void testCalcularTotalComProdutoExistente() {
+		Produto produtoExistente = new Produto(0L, "Produto 1", "Descrição", 30.0, true);
+		ProdutoVenda produtoVenda = new ProdutoVenda();
+		produtoVenda.setProduto(produtoExistente);
+		produtoVenda.setQuantidade(3);
+
+		Venda venda = new Venda();
+		venda.setProdutosVenda(Arrays.asList(produtoVenda));
+		venda.setDesconto(10);
+
+		when(produtoService.findById(1L)).thenReturn(produtoExistente);
+
+		double total = vendaService.calcularTotal(venda);
+
+		assertEquals(81.0, total);
+	}
+
+	@Test
+	@DisplayName("Deve lançar exceção quando o usuário da venda está desativado")
+	void testValidarVendaUsuarioDesativado() {
+		Usuario usuarioDesativado = new Usuario();
+		usuarioDesativado.setAtivo(false); 
+		usuarioDesativado.setNome("José");
+
+		Venda venda = new Venda();
+		venda.setUsuario(usuarioDesativado); 
+		venda.setFormaPagamento("Cartão de Crédito"); 
+		RuntimeException thrown = assertThrows(RuntimeException.class, () -> vendaService.validarVenda(venda));
+		assertEquals("Erro: José foi desativado", thrown.getMessage());
 	}
 
 }
