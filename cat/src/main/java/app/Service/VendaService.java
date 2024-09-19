@@ -12,6 +12,7 @@ import java.util.Random;
 import javax.management.RuntimeErrorException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import app.Entity.Produto;
@@ -198,10 +199,28 @@ public class VendaService {
 	}
 
 	public List<Venda> findByData(LocalDateTime startDate, LocalDateTime endDate) {
+		
+		if (startDate.isAfter(endDate)) {
+			throw new RuntimeException("A data inicial não pode ser posterior a data final");// Garante que startDate não seja depois de endDate.
+		}
+		
 		return this.vendaRepository.findByDataBetween(startDate, endDate);
 	}
 
 	public List<Venda> findByMonthAndYear(int mes, int ano) {
+		
+		if(mes > 12 || mes < 0){
+			throw new RuntimeException("O mes inserido não é válido");
+		}
+		
+		if(ano > LocalDateTime.now().getYear()){
+			throw new RuntimeException("O ano inserido não é válido");
+		}
+		
+		if(ano <= LocalDateTime.now().getYear() && mes > LocalDateTime.now().getMonth().getValue()){
+			throw new RuntimeException("O mês selecionado é posterior a data atual");
+		}
+		
 		// Definindo o primeiro e o último dia do mês
 		YearMonth yearMonth = YearMonth.of(ano, mes);
 		LocalDateTime startDate = yearMonth.atDay(1).atStartOfDay();

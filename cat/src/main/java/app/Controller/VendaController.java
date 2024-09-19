@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -80,19 +81,14 @@ public class VendaController {
 	// api/venda/findByData?startDate=2024-08-18T00:00:00&endDate=2024-08-18T23:59:59
 	@GetMapping("/findByData")
 	public ResponseEntity<List<Venda>> findByDataBetween(
-// indica que startDate e endDate será extraído da URL da solicitação.
 			@RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
 			@RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate) {
-		if (startDate.isAfter(endDate)) {
-			return ResponseEntity.badRequest().body(null);// Garante que startDate não seja depois de endDate.
-		}
+		
 		try {
 			List<Venda> vendas = vendaService.findByData(startDate, endDate);
 			return ResponseEntity.ok(vendas);
-		} catch (DateTimeParseException e) {
-			return ResponseEntity.badRequest().body(null);
 		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 	}
 
