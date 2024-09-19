@@ -51,4 +51,5 @@ public class Venda {
 	@JsonIgnoreProperties("venda")
 	private List<ProdutoVenda> produtosVenda;
  
+
 }

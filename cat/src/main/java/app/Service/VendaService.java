@@ -49,10 +49,11 @@ public class VendaService {
 		return "Venda salva com sucesso";
 	}
 
-	private void validarVenda(Venda venda) {
+	public void validarVenda(Venda venda) {
 		// Verificar se o usuário está ativo
 		if (venda.getUsuario() == null || !venda.getUsuario().isAtivo()) {
-			throw new RuntimeException("Erro: " + venda.getUsuario().getNome() + " foi desativado");
+			String nomeUsuario = (venda.getUsuario() != null) ? venda.getUsuario().getNome() : "null";
+			throw new RuntimeException("Erro: " + nomeUsuario+ " foi desativado");
 		}
 
 		List<String> formasPagamentoValidas = Arrays.asList("Cartão de Débito", "Cartão de Crédito", "Dinheiro", "Pix");
@@ -72,8 +73,9 @@ public class VendaService {
 		Optional<Venda> optional = this.vendaRepository.findById(id);
 		if (optional.isPresent()) {
 			return optional.get();
-		} else
-			return null;
+		} else {
+			throw new RuntimeException("Venda não encontrada");
+		}
 	}
 
 	public List<Venda> findAll() {
@@ -110,6 +112,7 @@ public class VendaService {
 
 		return venda;
 	}
+	
 
 	public Venda atualizarVenda(Venda venda, long id) {
 
@@ -128,7 +131,7 @@ public class VendaService {
 		return venda;
 	}
 
-	private List<ProdutoVenda> verificarProdutos(List<ProdutoVenda> produtosVenda) {
+	public List<ProdutoVenda> verificarProdutos(List<ProdutoVenda> produtosVenda) {
 		List<ProdutoVenda> listTemp = new ArrayList<>();
 
 		for (ProdutoVenda produtoVenda : produtosVenda) {
@@ -160,7 +163,7 @@ public class VendaService {
 		return listTemp;
 	}
 
-	private double calcularTotal(Venda venda) {
+	public double calcularTotal(Venda venda) {
 
 		double valorTotal = 0;
 

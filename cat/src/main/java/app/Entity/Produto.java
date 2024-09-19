@@ -43,4 +43,12 @@ public class Produto {
 	@JsonIgnoreProperties("produto")
 	private List<ProdutoVenda> produtosVenda;
 	
+	 public Produto(Long id, String nome, String descricao, double preco, boolean ativo) {
+	        this.id = id;
+	        this.nome = nome;
+	        this.descricao = descricao;
+	        this.preco = preco;
+	        this.ativo = ativo;
+	    }
+	
 }
