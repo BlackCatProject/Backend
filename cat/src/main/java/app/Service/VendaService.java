@@ -230,6 +230,7 @@ public class VendaService {
 	}
 
 	public List<Venda> findByUsuarioId(long usuarioId) {
+		
 		return vendaRepository.findByUsuarioId(usuarioId);
 	}
 

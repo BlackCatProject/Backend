@@ -63,7 +63,7 @@ public class VendaControllerTest {
 
 		list.add(produtoVendaBanana);
 
-		Venda venda = new Venda(1, 6, LocalDateTime.of(2024, 9, 4, 14, 56), 0, 0, "Pix", usuario, list);
+		Venda venda = new Venda(1, 6, LocalDateTime.of(2024, 9, 4, 14, 56), 0, 193735171L, "Pix", usuario, list);
 
 		Produto produtoTomate = new Produto(2, "Tomate", "1 tomate", true, 2, null);
 
@@ -74,7 +74,7 @@ public class VendaControllerTest {
 		list2.add(produtoVendaBanana);
 		list2.add(produtoVendaTomate);
 
-		Venda venda2 = new Venda(1, 16, LocalDateTime.of(2024, 9, 16, 14, 56), 0, 0, "Pix", usuario, list2);
+		Venda venda2 = new Venda(1, 16, LocalDateTime.of(2024, 9, 16, 14, 56), 0, 876576535L, "Pix", usuario, list2);
 
 		List<Venda> vendas = new ArrayList<>();
 
@@ -90,6 +90,12 @@ public class VendaControllerTest {
 		Mockito.when(vendaRepository.findAll()).thenReturn(vendas);
 
 		Mockito.when(vendaRepository.findByDataBetween(any(), any())).thenReturn(vendas);
+		
+		Mockito.when(vendaRepository.findByUsuarioId(1L)).thenReturn(vendas);
+		
+		Mockito.when(vendaRepository.findByUsuarioId(2L)).thenReturn(null);
+		
+		Mockito.when(vendaRepository.findByNfe(193735171L)).thenReturn(Optional.of(venda));
 
 		Mockito.when(usuarioService.findById(1)).thenReturn(usuario);
 
@@ -307,6 +313,35 @@ public class VendaControllerTest {
 		ResponseEntity<List<Venda>> retorno = this.vendaController.findByMonthAndYear(9, 2025);
 		
 		assertEquals(HttpStatus.BAD_REQUEST, retorno.getStatusCode());
+		
+	}
+	
+	@Test
+	@DisplayName("Integração - find da venda pelo id do usuario")
+	void cenarioFindVendaByUserId() {
+		
+		ResponseEntity<List<Venda>> retorno = this.vendaController.findByUsuarioId(1L);
+		
+		assertEquals(HttpStatus.OK, retorno.getStatusCode());
+		assertEquals(2, retorno.getBody().size());
+	}
+	@Test
+	@DisplayName("Integração - find da venda pelo id do usuario")
+	void cenarioFindyUserIdVendaNull() {
+		
+		ResponseEntity<List<Venda>> retorno = this.vendaController.findByUsuarioId(0L);
+		
+		assertEquals(HttpStatus.NO_CONTENT, retorno.getStatusCode());
+	}
+	
+	@Test
+	@DisplayName("Integração - find da venda pela nfe")
+	void cenarioFindVendaByNfe() {
+		
+		ResponseEntity<Venda> retorno = this.vendaController.buscarPorNumeroNfe(193735171L);
+		
+		assertEquals(HttpStatus.OK, retorno.getStatusCode());
+		assertEquals(193735171L, retorno.getBody().getNfe());
 		
 	}
 	
