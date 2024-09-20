@@ -51,7 +51,7 @@ public class VendaControllerTest {
 	void setUp() {
 
 		LocalDateTime startDate = LocalDateTime.of(2024, 9, 1, 00, 00);
-		LocalDateTime endDate = LocalDateTime.of(2024, 9, 31, 23, 59);
+		LocalDateTime endDate = LocalDateTime.of(2024, 9, 30, 23, 59);
 
 		Usuario usuario = new Usuario(1, "Marcela Garcia", "Marci", "Senha123", Role.FUNCIONARIO, true, null);
 
@@ -63,7 +63,7 @@ public class VendaControllerTest {
 
 		list.add(produtoVendaBanana);
 
-		Venda venda = new Venda(1, 6, LocalDateTime.of(2024, 9, 4, 14, 56), 0, 0, "Pix", usuario, list);
+		Venda venda = new Venda(1, 6, LocalDateTime.of(2024, 9, 4, 14, 56), 0, 193735171L, "Pix", usuario, list);
 
 		Produto produtoTomate = new Produto(2, "Tomate", "1 tomate", true, 2, null);
 
@@ -74,7 +74,7 @@ public class VendaControllerTest {
 		list2.add(produtoVendaBanana);
 		list2.add(produtoVendaTomate);
 
-		Venda venda2 = new Venda(1, 16, LocalDateTime.of(2024, 9, 16, 14, 56), 0, 0, "Pix", usuario, list2);
+		Venda venda2 = new Venda(1, 16, LocalDateTime.of(2024, 9, 16, 14, 56), 0, 876576535L, "Pix", usuario, list2);
 
 		List<Venda> vendas = new ArrayList<>();
 
@@ -89,7 +89,13 @@ public class VendaControllerTest {
 
 		Mockito.when(vendaRepository.findAll()).thenReturn(vendas);
 
-		Mockito.when(vendaRepository.findByDataBetween(startDate, endDate)).thenReturn(vendas);
+		Mockito.when(vendaRepository.findByDataBetween(any(), any())).thenReturn(vendas);
+		
+		Mockito.when(vendaRepository.findByUsuarioId(1L)).thenReturn(vendas);
+		
+		Mockito.when(vendaRepository.findByUsuarioId(2L)).thenReturn(null);
+		
+		Mockito.when(vendaRepository.findByNfe(193735171L)).thenReturn(Optional.of(venda));
 
 		Mockito.when(usuarioService.findById(1)).thenReturn(usuario);
 
@@ -234,7 +240,7 @@ public class VendaControllerTest {
 	void cenarioFindVendaByData() {
 
 		LocalDateTime startDate = LocalDateTime.of(2024, 9, 1, 00, 00);
-		LocalDateTime endDate = LocalDateTime.of(2024, 9, 31, 23, 59);
+		LocalDateTime endDate = LocalDateTime.of(2024, 9, 30, 23, 59);
 
 		ResponseEntity<List<Venda>> retorno = this.vendaController.findByDataBetween(startDate, endDate);
 
@@ -245,4 +251,98 @@ public class VendaControllerTest {
 
 	}
 
+	@Test
+	@DisplayName("Integração - findByData da venda")
+	void cenarioFindVendaByDataError() {
+		
+		LocalDateTime startDate = LocalDateTime.of(2024, 9, 30, 00, 00);
+		LocalDateTime endDate = LocalDateTime.of(2024, 9, 1, 23, 59);
+		
+		ResponseEntity<List<Venda>> retorno = this.vendaController.findByDataBetween(startDate, endDate);
+		
+		assertEquals(HttpStatus.BAD_REQUEST, retorno.getStatusCode());
+		
+	}
+	
+	@Test
+	@DisplayName("Integração - find da venda por mes e ano")
+	void cenarioFindVendaByMesAndAno() {
+		
+		ResponseEntity<List<Venda>> retorno = this.vendaController.findByMonthAndYear(2024, 9);
+		
+		List<Venda> venda = retorno.getBody();
+
+		assertEquals(2, venda.size());
+		assertEquals(HttpStatus.OK, retorno.getStatusCode());
+	}
+	
+	@Test
+	@DisplayName("Integração - find da venda por mes e ano - mes posterior ao atual")
+	void cenarioVendaByMonthAndYearMesPosterior() {
+		
+		ResponseEntity<List<Venda>> retorno = this.vendaController.findByMonthAndYear(2024, 10);
+		
+		assertEquals(HttpStatus.BAD_REQUEST, retorno.getStatusCode());
+		
+	}
+	
+	
+	@Test
+	@DisplayName("Integração - find da venda por mes e ano - mes invalido")
+	void cenarioVendaByMonthAndYearMesInvalido() {
+		
+		ResponseEntity<List<Venda>> retorno = this.vendaController.findByMonthAndYear(2024, 13);
+		
+		assertEquals(HttpStatus.BAD_REQUEST, retorno.getStatusCode());
+		
+	}
+	@Test
+	@DisplayName("Integração - find da venda por mes e ano - mes negativo")
+	void cenarioVendaByMonthAndYearMesNegativo() {
+		
+		ResponseEntity<List<Venda>> retorno = this.vendaController.findByMonthAndYear(2024, -2);
+		
+		assertEquals(HttpStatus.BAD_REQUEST, retorno.getStatusCode());
+		
+	}
+	
+	@Test
+	@DisplayName("Integração - find da venda por mes e ano - ano posterior ao atual")
+	void cenarioVendaByMonthAndYearAnoPosterior() {
+		
+		ResponseEntity<List<Venda>> retorno = this.vendaController.findByMonthAndYear(9, 2025);
+		
+		assertEquals(HttpStatus.BAD_REQUEST, retorno.getStatusCode());
+		
+	}
+	
+	@Test
+	@DisplayName("Integração - find da venda pelo id do usuario")
+	void cenarioFindVendaByUserId() {
+		
+		ResponseEntity<List<Venda>> retorno = this.vendaController.findByUsuarioId(1L);
+		
+		assertEquals(HttpStatus.OK, retorno.getStatusCode());
+		assertEquals(2, retorno.getBody().size());
+	}
+	@Test
+	@DisplayName("Integração - find da venda pelo id do usuario")
+	void cenarioFindyUserIdVendaNull() {
+		
+		ResponseEntity<List<Venda>> retorno = this.vendaController.findByUsuarioId(0L);
+		
+		assertEquals(HttpStatus.NO_CONTENT, retorno.getStatusCode());
+	}
+	
+	@Test
+	@DisplayName("Integração - find da venda pela nfe")
+	void cenarioFindVendaByNfe() {
+		
+		ResponseEntity<Venda> retorno = this.vendaController.buscarPorNumeroNfe(193735171L);
+		
+		assertEquals(HttpStatus.OK, retorno.getStatusCode());
+		assertEquals(193735171L, retorno.getBody().getNfe());
+		
+	}
+	
 }
