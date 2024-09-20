@@ -61,14 +61,14 @@ public class ProdutoService {
 
 	public String delete(Long id) {
 		this.produtoRepository.deleteById(id);
-		return " Produto deletado com sucesso!";
+		return "Produto deletado com sucesso!";
 	}
 	
 	public String disable(Long id) {
 		Produto produtoInDB = this.findById(id);
 		produtoInDB.setAtivo(false);
 		this.produtoRepository.save(produtoInDB);
-		return " Produto desativado com sucesso!";
+		return "Produto desativado com sucesso!";
 	}
 	
 	public String enable(Long id) {
