@@ -116,10 +116,4 @@ public class VendaController {
 		}
 	}
 
-	@GetMapping("/buscar-por-nfe")
-	public ResponseEntity<Venda> buscarPorNumeroNfe(@RequestParam long nfe) {
-		Venda venda = vendaService.buscarPorNumeroNfe(nfe);
-		return ResponseEntity.ok(venda);
-	}
-
 }

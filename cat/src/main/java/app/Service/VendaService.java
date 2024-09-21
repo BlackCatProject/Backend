@@ -108,7 +108,6 @@ public class VendaService {
 		venda.setProdutosVenda(this.verificarProdutos(venda.getProdutosVenda()));
 		double valorTotal = calcularTotal(venda);
 		venda.setTotal(valorTotal);
-		venda.setNfe(gerarNfe());
 		venda.setData(LocalDateTime.now());
 
 		return venda;
@@ -125,7 +124,6 @@ public class VendaService {
 		venda.setId(id);
 		venda.setProdutosVenda(this.verificarProdutos(venda.getProdutosVenda()));
 		venda.setData(vendaInDb.getData());
-		venda.setNfe(vendaInDb.getNfe());
 		double valorTotal = calcularTotal(venda);
 		venda.setTotal(valorTotal);
 
@@ -185,18 +183,6 @@ public class VendaService {
 		}
 	}
 
-	private long gerarNfe() {
-
-		Random random = new Random();
-		long numNfe;
-		boolean exists = false;
-		do {
-			numNfe = random.nextInt(900000000) + 100000000;
-			exists = vendaRepository.existsByNfe(numNfe);
-		} while (exists);
-
-		return numNfe;
-	}
 
 	public List<Venda> findByData(LocalDateTime startDate, LocalDateTime endDate) {
 		
@@ -234,9 +220,6 @@ public class VendaService {
 		return vendaRepository.findByUsuarioId(usuarioId);
 	}
 
-	public Venda buscarPorNumeroNfe(long numeroNfe) {
-		return vendaRepository.findByNfe(numeroNfe).orElseThrow(
-				() -> new NoSuchElementException("Venda não encontrada com o número da NFe: " + numeroNfe));
-	}
+
 
 }

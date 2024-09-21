@@ -11,10 +11,6 @@ import app.Entity.Venda;
 public interface VendaRepository extends JpaRepository<Venda, Long> {
 
 	public List<Venda> findByDataBetween(LocalDateTime startDate, LocalDateTime endDate);
-
-	public Boolean existsByNfe(long numNfe);
-
 	public List<Venda> findByUsuarioId(long usuarioId);
 
-	public Optional<Venda> findByNfe(long nfe);
 }

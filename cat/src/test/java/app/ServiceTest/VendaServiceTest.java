@@ -99,7 +99,7 @@ public class VendaServiceTest {
 		vendaExistente.setDesconto(10);
 		vendaExistente.setFormaPagamento("Cartão de Crédito");
 		vendaExistente.setData(LocalDateTime.now().minusDays(1));
-		vendaExistente.setNfe(123456789L);
+	//	vendaExistente.setNfe(123456789L);
 
 		Venda vendaAtualizada = new Venda();
 		vendaAtualizada.setUsuario(usuario);
@@ -293,30 +293,7 @@ public class VendaServiceTest {
 		assertEquals(1, result.size());
 		assertEquals(1L, result.get(0).getId());
 	}
-
-	@Test
-	@DisplayName("Buscar venda por número da NFe com sucesso")
-	void testBuscarPorNumeroNfeSuccess() {
-		Usuario usuario = new Usuario(1L, "José", "jose", "senha", Usuario.Role.GESTOR, true);
-		Produto produto = new Produto(1L, "Produto 1", "Descrição", 50.0, true);
-		ProdutoVenda produtoVenda = new ProdutoVenda();
-		produtoVenda.setProduto(produto);
-		produtoVenda.setQuantidade(2);
-
-		Venda venda = new Venda();
-		venda.setId(1L);
-		venda.setUsuario(usuario);
-		venda.setProdutosVenda(Collections.singletonList(produtoVenda));
-		venda.setDesconto(10);
-		venda.setFormaPagamento("Cartão de Crédito");
-		venda.setNfe(123456789L);
-
-		when(vendaRepository.findByNfe(123456789L)).thenReturn(Optional.of(venda));
-
-		Venda result = vendaService.buscarPorNumeroNfe(123456789L);
-		assertEquals(1L, result.getId());
-	}
-
+	
 	// testes em caso de erro
 	@Test
 	@DisplayName("Erro ao tentar salvar venda com usuário inativo")
@@ -529,16 +506,6 @@ public class VendaServiceTest {
 		RuntimeException thrown = assertThrows(RuntimeException.class,
 				() -> vendaService.verificarProdutos(produtosVenda));
 		assertEquals("Erro: o produto Produto 1 foi desativado.", thrown.getMessage());
-	}
-
-	@Test
-	@DisplayName("Erro ao buscar venda por número da NFe não encontrada")
-	void testBuscarPorNumeroNfeNotFound() {
-		when(vendaRepository.findByNfe(123456789L)).thenReturn(Optional.empty());
-
-		NoSuchElementException thrown = assertThrows(NoSuchElementException.class,
-				() -> vendaService.buscarPorNumeroNfe(123456789L));
-		assertEquals("Venda não encontrada com o número da NFe: 123456789", thrown.getMessage());
 	}
 
 	@Test
