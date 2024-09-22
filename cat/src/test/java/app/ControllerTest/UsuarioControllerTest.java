@@ -164,4 +164,26 @@ public class UsuarioControllerTest {
     }
 
 
+    @Test
+    @DisplayName("Enable Usuario bad request")
+    void cenarioEnableUsuarioBadRequest() {
+
+        Usuario usuario = new Usuario(1, "Marcela Garcia", "Marci", "Senha123", Usuario.Role.FUNCIONARIO, true, null);
+        ResponseEntity<String> retorno = usuarioController.enable(0L);
+
+        assertEquals(HttpStatus.BAD_REQUEST, retorno.getStatusCode());
+    }
+
+    @Test
+    @DisplayName("Disable Usuario Bad Request")
+    void cenarioDisableUsuarioBadRequest() {
+
+        Usuario usuario = new Usuario(1, "Marcela Garcia", "Marci", "Senha123", Usuario.Role.FUNCIONARIO, true, null);
+        usuarioRepository.save(usuario);
+
+        ResponseEntity<String> retorno = usuarioController.disable(0L);
+
+        assertEquals(HttpStatus.BAD_REQUEST, retorno.getStatusCode());
+    }
+
 }
