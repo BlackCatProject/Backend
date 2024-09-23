@@ -50,12 +50,12 @@ public class UsuarioController {
 	}
 
 	@GetMapping("/findById/{id}")
-	public ResponseEntity<Usuario> findByIndex(@PathVariable long id) {
+	public ResponseEntity<Usuario> findById(@PathVariable long id) {
 		try {
 			Usuario funcionario = this.usuarioService.findById(id);
 			return new ResponseEntity<>(funcionario, HttpStatus.OK);
 		} catch (Exception e) {
-			return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 	}
 
@@ -65,7 +65,7 @@ public class UsuarioController {
 			List<Usuario> lista = this.usuarioService.findAll(ativo);
 			return new ResponseEntity<>(lista, HttpStatus.OK);
 		} catch (Exception e) {
-			return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 	}
 
