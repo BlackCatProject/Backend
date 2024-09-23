@@ -91,13 +91,11 @@ public class UsuarioControllerTest {
         assertEquals(HttpStatus.BAD_REQUEST, retorno.getStatusCode());
     }
 
-    ///////// VERIFICAR NA CONTROLLER COM AS MENINAS E MENINO PASSA COMO OK !! /////
-
     @Test
     @DisplayName("Find Usuario By ID")
     void cenarioFindByIdUsuario() {
 
-        ResponseEntity<Usuario> retorno = this.usuarioController.findByIndex(1);
+        ResponseEntity<Usuario> retorno = this.usuarioController.findById(1);
 
         Usuario usuario = retorno.getBody();
 
@@ -105,15 +103,15 @@ public class UsuarioControllerTest {
     }
 
     @Test
-    @DisplayName("Find Usuario By ID Bad Request")
-    void cenarioFindByIdUsuarioBadRequest() {
 
-        ResponseEntity<Usuario> retorno = this.usuarioController.findByIndex(0);
+   @DisplayName("Find Usuario By ID Bad Request")
+   void cenarioFindByIdUsuarioBadRequest() {
+
+       ResponseEntity<Usuario> retorno = this.usuarioController.findById(0);
 
         assertEquals(HttpStatus.BAD_REQUEST, retorno.getStatusCode());
-    }
+   }
 
-    ////
 
     @Test
     @DisplayName("Find All Usuario")

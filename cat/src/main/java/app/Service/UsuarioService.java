@@ -48,7 +48,7 @@ public class UsuarioService {
 		if (optional.isPresent()) {
 			return optional.get();
 		} else
-			return null;
+			throw new RuntimeException("Usúario não encontrado");
 	}
 
 	public List<Usuario> findAll(boolean ativo) {
