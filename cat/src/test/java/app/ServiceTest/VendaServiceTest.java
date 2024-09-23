@@ -99,7 +99,6 @@ public class VendaServiceTest {
 		vendaExistente.setDesconto(10);
 		vendaExistente.setFormaPagamento("Cartão de Crédito");
 		vendaExistente.setData(LocalDateTime.now().minusDays(1));
-	//	vendaExistente.setNfe(123456789L);
 
 		Venda vendaAtualizada = new Venda();
 		vendaAtualizada.setUsuario(usuario);
@@ -272,7 +271,7 @@ public class VendaServiceTest {
 
 	@Test
 	@DisplayName("Buscar vendas por ID do usuário com sucesso")
-	void testFindByUsuarioId() {
+	void FindByUsuarioId() {
 		Usuario usuario = new Usuario(1L, "José", "jose", "senha", Usuario.Role.GESTOR, true);
 		Produto produto = new Produto(1L, "Produto 1", "Descrição", 50.0, true);
 		ProdutoVenda produtoVenda = new ProdutoVenda();
@@ -293,6 +292,20 @@ public class VendaServiceTest {
 		assertEquals(1, result.size());
 		assertEquals(1L, result.get(0).getId());
 	}
+	@Test
+	@DisplayName("Lançar exceção quando o ano for maior que o ano atual")
+	void testAnoInvalido() {
+	  
+	    int anoInvalido = LocalDateTime.now().getYear() + 1; 
+	    int mes = 5; 
+
+	    RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+	        vendaService.findByMonthAndYear(mes, anoInvalido);
+	    });
+
+	    assertEquals("O ano inserido não é válido", exception.getMessage());
+	}
+
 	
 	// testes em caso de erro
 	@Test

@@ -64,14 +64,14 @@ public class UsuarioService {
 		Usuario usuarioInDB = this.findById(id);
 		usuarioInDB.setAtivo(false);
 		this.usuarioRepository.save(usuarioInDB);
-		return " Usuário desativado com sucesso!";
+		return "Usuário desativado com sucesso!";
 	}
 	
 	public String enable(Long id) {
 		Usuario usuarioInDB = this.findById(id);
 		usuarioInDB.setAtivo(true);
 		this.usuarioRepository.save(usuarioInDB);
-		return " Usuário desativado com sucesso!";
+		return "Usuário ativado com sucesso!";
 	}
 
 }
