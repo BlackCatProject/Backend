@@ -109,6 +109,7 @@ public class VendaService {
 		double valorTotal = calcularTotal(venda);
 		venda.setTotal(valorTotal);
 		venda.setData(LocalDateTime.now());
+		venda.setUsuario(usuario);
 
 		return venda;
 	}
@@ -135,12 +136,13 @@ public class VendaService {
 		List<ProdutoVenda> listTemp = new ArrayList<>();
 		
 		for(ProdutoVenda produtoVenda : produtosVenda) {
+			
 			Produto produto = produtoService.findById(produtoVenda.getProduto().getId());
 			if (produto == null) {
 				throw new RuntimeException("Produto não encontrado");
 			}
 			// Verificar se o produto está ativo
-			else if (!produto.isAtivo()) {
+			if (!produto.isAtivo()) {
 				throw new RuntimeException("Erro: o produto " + produto.getNome() + " foi desativado.");
 			} else {
 				listTemp.add(produtoVenda);
