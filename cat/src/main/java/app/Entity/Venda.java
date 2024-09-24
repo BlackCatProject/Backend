@@ -4,7 +4,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
@@ -14,6 +13,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -47,6 +47,7 @@ public class Venda {
 
 	@OneToMany(mappedBy = "venda", cascade = CascadeType.ALL)
 	@JsonIgnoreProperties("venda")
+	@NotEmpty(message = "O nome não pode ser nulo, vazio ou apenas espaços em branco") 
 	private List<ProdutoVenda> produtosVenda;
  
 }

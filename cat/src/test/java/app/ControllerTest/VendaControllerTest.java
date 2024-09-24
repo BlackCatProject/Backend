@@ -22,6 +22,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import com.mysql.cj.exceptions.ExceptionInterceptorChain;
+
 import app.Controller.VendaController;
 import app.Entity.Produto;
 import app.Entity.ProdutoVenda;
@@ -31,6 +33,7 @@ import app.Entity.Venda;
 import app.Repository.VendaRepository;
 import app.Service.ProdutoService;
 import app.Service.UsuarioService;
+import jakarta.validation.ConstraintViolationException;
 
 @SpringBootTest
 public class VendaControllerTest {
@@ -146,7 +149,45 @@ public class VendaControllerTest {
 		Venda venda = new Venda(1, 0, null, 0, "", usuario, list);
 		
 		
-		assertThrows(Exception.class, ()->{
+		assertThrows(ConstraintViolationException.class, ()->{
+			vendaController.save(venda);
+		});
+	}
+	
+	@Test
+	@DisplayName("Integração - Cenário Save da Venda User Null")
+	void cenarioSaveVendaExcecaoUserNull() {
+		
+		Usuario usuario = null;
+		
+		Produto produtoBanana = new Produto(1, "Banana", "Penca de Banana", true, 6, null);
+		
+		ProdutoVenda produtoVendaBanana = new ProdutoVenda(1, 1, null, produtoBanana);
+		
+		List<ProdutoVenda> list = new ArrayList<>();
+		
+		list.add(produtoVendaBanana);
+		
+		Venda venda = new Venda(1, 0, null, 0, "Pix", usuario, list);
+		
+		
+		assertThrows(ConstraintViolationException.class, ()->{
+			vendaController.save(venda);
+		});
+	}
+	
+	@Test
+	@DisplayName("Integração - Cenário Save da Venda Lista de Produtos Vazia")
+	void cenarioSaveVendaExcecaoListEmpty() {
+		
+		Usuario usuario = new Usuario(1, "Marcela Garcia", "Marci", "Senha123", Role.FUNCIONARIO, true, null);
+		
+		List<ProdutoVenda> list = new ArrayList<>();
+		
+		Venda venda = new Venda(1, 0, null, 0, "Pix", usuario, list);
+		
+		
+		assertThrows(ConstraintViolationException.class, ()->{
 			vendaController.save(venda);
 		});
 	}
@@ -168,7 +209,7 @@ public class VendaControllerTest {
 		Venda venda = new Venda(1, 0, null, 0, null, usuario, list);
 		
 		
-		assertThrows(Exception.class, ()->{
+		assertThrows(ConstraintViolationException.class, ()->{
 			vendaController.save(venda);
 		});
 	}
