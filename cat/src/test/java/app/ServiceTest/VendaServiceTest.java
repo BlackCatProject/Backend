@@ -70,29 +70,85 @@ public class VendaServiceTest {
 		RuntimeException thrown = assertThrows(RuntimeException.class, () -> vendaService.validarVenda(venda));
 		assertEquals("Erro: null foi desativado", thrown.getMessage());
 	}
+	
 	@Test
-	@DisplayName("Erro ao tentar salvar venda com forma de pagamento inválida")
-	void PagamentoInvalida() {
-		Usuario usuario = new Usuario(1L, "José", "jose", "senha", Usuario.Role.GESTOR, true);
-		Produto produto = new Produto(1L, "Produto 1", "Descrição", 50.0, true);
-		ProdutoVenda produtoVenda = new ProdutoVenda();
-		produtoVenda.setProduto(produto);
-		produtoVenda.setQuantidade(2);
+	@DisplayName("Deve lançar exceção quando o usuário da venda está desativado")
+	void ValidarVendaUsuarioDesativado() {
+		Usuario usuarioDesativado = new Usuario();
+		usuarioDesativado.setAtivo(false); 
+		usuarioDesativado.setNome("José");
 
 		Venda venda = new Venda();
-		venda.setUsuario(usuario);
-		venda.setProdutosVenda(Collections.singletonList(produtoVenda));
-		venda.setDesconto(10);
-		venda.setFormaPagamento("Forma Inválida");
-
-		when(usuarioService.findById(1L)).thenReturn(usuario);
-		when(produtoService.findById(1L)).thenReturn(produto);
-
-
-		RuntimeException thrown = assertThrows(RuntimeException.class, () -> vendaService.save(venda));
-		assertEquals("Forma de pagamento inválida", thrown.getMessage());
+		venda.setUsuario(usuarioDesativado); 
+		venda.setFormaPagamento("Cartão de Crédito"); 
+		RuntimeException thrown = assertThrows(RuntimeException.class, () -> vendaService.validarVenda(venda));
+		assertEquals("Erro: José foi desativado", thrown.getMessage());
 	}
+	
+	@Test
+	@DisplayName("Validar uma venda com sucesso")
+	void validarVendaSuccess() {
+		
+		Usuario usuario = new Usuario();
+		usuario.setAtivo(true); 
+		usuario.setNome("José");
+
+		Venda venda = new Venda();
+		venda.setUsuario(usuario); 
+		venda.setFormaPagamento("Cartão de Crédito"); 
+		assertDoesNotThrow(() -> vendaService.validarVenda(venda));
+		
+	}
+	
+	@Test
+	@DisplayName("Somando ProdutosVenda Repetidos")
+	void somarProdutosVenda() {
+		List<ProdutoVenda> produtosVenda = new ArrayList<>();
+		
+		Produto produto = new Produto(1L, "Horchata", "Suco de arroz com canela - Copo 400ml", 10, true);
+		
+		ProdutoVenda produtoVenda1 = new ProdutoVenda(produto, 1);
+		
+		ProdutoVenda produtoVenda2 = new ProdutoVenda(produto, 2);
+		
+		produtosVenda.add(produtoVenda1);
+		produtosVenda.add(produtoVenda2);
+		
+		List<ProdutoVenda> resultList = this.vendaService.juntarProdutosVendaIguais(produtosVenda);
+		
+		assertEquals(1, resultList.size());
+		
+		assertEquals(3, resultList.get(0).getQuantidade());
+		
+	}
+
+	
+	@Test
+	@DisplayName("Sem ProdutosVenda repetidos")
+	void nenhumProdutoVendaRepetido() {
+		List<ProdutoVenda> produtosVenda = new ArrayList<>();
+		
+		Produto horchata = new Produto(1L, "Horchata", "Suco de arroz com canela - Copo 400ml", 10, true);
+		
+		Produto quesadilla = new Produto(2L, "Quesadilha", "Tortilha recheada", 15, true);
+		
+		ProdutoVenda produtoVenda1 = new ProdutoVenda(horchata, 1);
+		
+		ProdutoVenda produtoVenda2 = new ProdutoVenda(quesadilla, 2);
+		
+		produtosVenda.add(produtoVenda1);
+		produtosVenda.add(produtoVenda2);
+		
+		List<ProdutoVenda> resultList = this.vendaService.juntarProdutosVendaIguais(produtosVenda);
+		
+		assertEquals(2, resultList.size());
+		
+	}
+	
+	
+		
 	// testes com sucesso
+	
 	@Test
 	@DisplayName("Salvar venda com sucesso")
 	void SaveSuccess() {
@@ -326,6 +382,32 @@ public class VendaServiceTest {
 		assertEquals(1, result.size());
 		assertEquals(1L, result.get(0).getId());
 	}
+	
+	//Testes com exceções
+	
+	@Test
+	@DisplayName("Erro ao tentar salvar venda com forma de pagamento inválida")
+	void PagamentoInvalida() {
+		Usuario usuario = new Usuario(1L, "José", "jose", "senha", Usuario.Role.GESTOR, true);
+		Produto produto = new Produto(1L, "Produto 1", "Descrição", 50.0, true);
+		ProdutoVenda produtoVenda = new ProdutoVenda();
+		produtoVenda.setProduto(produto);
+		produtoVenda.setQuantidade(2);
+		
+		Venda venda = new Venda();
+		venda.setUsuario(usuario);
+		venda.setProdutosVenda(Collections.singletonList(produtoVenda));
+		venda.setDesconto(10);
+		venda.setFormaPagamento("Forma Inválida");
+		
+		when(usuarioService.findById(1L)).thenReturn(usuario);
+		when(produtoService.findById(1L)).thenReturn(produto);
+		
+		
+		RuntimeException thrown = assertThrows(RuntimeException.class, () -> vendaService.save(venda));
+		assertEquals("Forma de pagamento inválida", thrown.getMessage());
+	}
+	
 	@Test
 	@DisplayName("Lançar exceção quando o ano for maior que o ano atual")
 	void AnoInvalido() {
@@ -544,18 +626,6 @@ public class VendaServiceTest {
 		assertEquals(81.0, total);
 	}
 
-	@Test
-	@DisplayName("Deve lançar exceção quando o usuário da venda está desativado")
-	void ValidarVendaUsuarioDesativado() {
-		Usuario usuarioDesativado = new Usuario();
-		usuarioDesativado.setAtivo(false); 
-		usuarioDesativado.setNome("José");
-
-		Venda venda = new Venda();
-		venda.setUsuario(usuarioDesativado); 
-		venda.setFormaPagamento("Cartão de Crédito"); 
-		RuntimeException thrown = assertThrows(RuntimeException.class, () -> vendaService.validarVenda(venda));
-		assertEquals("Erro: José foi desativado", thrown.getMessage());
-	}
+	
 
 }
