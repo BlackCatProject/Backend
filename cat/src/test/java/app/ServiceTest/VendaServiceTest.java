@@ -119,12 +119,11 @@ public class VendaServiceTest {
 		assertEquals(1, resultList.size());
 		
 		assertEquals(3, resultList.get(0).getQuantidade());
-		
 	}
 
 	
 	@Test
-	@DisplayName("Sem ProdutosVenda repetidos")
+	@DisplayName("Lista sem ProdutosVenda repetidos")
 	void nenhumProdutoVendaRepetido() {
 		List<ProdutoVenda> produtosVenda = new ArrayList<>();
 		

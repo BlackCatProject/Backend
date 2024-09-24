@@ -121,12 +121,56 @@ public class VendaControllerTest {
 
 		list.add(produtoVendaBanana);
 
-		Venda venda = new Venda(1, 0, null, 0,/*0,*/ "Pix", usuario, list);
+		Venda venda = new Venda(1, 0, null, 0, "Pix", usuario, list);
 
 		ResponseEntity<String> retorno = vendaController.save(venda);
 
 		assertEquals("Venda salva com sucesso", retorno.getBody());
 		assertEquals(HttpStatus.OK, retorno.getStatusCode());
+	}
+	
+	@Test
+	@DisplayName("Integração - Cenário Save da Venda Forma de Pagamento em Branco")
+	void cenarioSaveVendaExcecaoPagamentoBlank() {
+		
+		Usuario usuario = new Usuario(1, "Marcela Garcia", "Marci", "Senha123", Role.FUNCIONARIO, true, null);
+		
+		Produto produtoBanana = new Produto(1, "Banana", "Penca de Banana", true, 6, null);
+		
+		ProdutoVenda produtoVendaBanana = new ProdutoVenda(1, 1, null, produtoBanana);
+		
+		List<ProdutoVenda> list = new ArrayList<>();
+		
+		list.add(produtoVendaBanana);
+		
+		Venda venda = new Venda(1, 0, null, 0, "", usuario, list);
+		
+		
+		assertThrows(Exception.class, ()->{
+			vendaController.save(venda);
+		});
+	}
+	
+	@Test
+	@DisplayName("Integração - Cenário Save da Venda Forma de Pagamento Nula")
+	void cenarioSaveVendaExcecaoPagamentoNull() {
+		
+		Usuario usuario = new Usuario(1, "Marcela Garcia", "Marci", "Senha123", Role.FUNCIONARIO, true, null);
+		
+		Produto produtoBanana = new Produto(1, "Banana", "Penca de Banana", true, 6, null);
+		
+		ProdutoVenda produtoVendaBanana = new ProdutoVenda(1, 1, null, produtoBanana);
+		
+		List<ProdutoVenda> list = new ArrayList<>();
+		
+		list.add(produtoVendaBanana);
+		
+		Venda venda = new Venda(1, 0, null, 0, null, usuario, list);
+		
+		
+		assertThrows(Exception.class, ()->{
+			vendaController.save(venda);
+		});
 	}
 
 	@Test

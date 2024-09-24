@@ -159,7 +159,7 @@ public class VendaService {
 
 
 		for (ProdutoVenda produtoVenda : produtosVenda) {
-			// Verificar se o produto está ativo no banco de dados
+			// Verificar se o produto está ativo 
 			Produto produto = produtoVenda.getProduto();
 
 			boolean encontrou = false;
