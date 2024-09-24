@@ -58,10 +58,44 @@ public class VendaServiceTest {
 		Mockito.when(usuarioService.findById(3L)).thenReturn(usuario01);
 	}
 
+	// unitarios
+	
+	@Test
+	@DisplayName("Erro ao validar venda com usuário nulo")
+	void ValidarVendaUsuarioNulo() {
+		Venda venda = new Venda();
+		venda.setUsuario(null);
+		venda.setFormaPagamento("Cartão de Crédito");
+
+		RuntimeException thrown = assertThrows(RuntimeException.class, () -> vendaService.validarVenda(venda));
+		assertEquals("Erro: null foi desativado", thrown.getMessage());
+	}
+	@Test
+	@DisplayName("Erro ao tentar salvar venda com forma de pagamento inválida")
+	void PagamentoInvalida() {
+		Usuario usuario = new Usuario(1L, "José", "jose", "senha", Usuario.Role.GESTOR, true);
+		Produto produto = new Produto(1L, "Produto 1", "Descrição", 50.0, true);
+		ProdutoVenda produtoVenda = new ProdutoVenda();
+		produtoVenda.setProduto(produto);
+		produtoVenda.setQuantidade(2);
+
+		Venda venda = new Venda();
+		venda.setUsuario(usuario);
+		venda.setProdutosVenda(Collections.singletonList(produtoVenda));
+		venda.setDesconto(10);
+		venda.setFormaPagamento("Forma Inválida");
+
+		when(usuarioService.findById(1L)).thenReturn(usuario);
+		when(produtoService.findById(1L)).thenReturn(produto);
+
+
+		RuntimeException thrown = assertThrows(RuntimeException.class, () -> vendaService.save(venda));
+		assertEquals("Forma de pagamento inválida", thrown.getMessage());
+	}
 	// testes com sucesso
 	@Test
 	@DisplayName("Salvar venda com sucesso")
-	void testSaveSuccess() {
+	void SaveSuccess() {
 		Usuario usuario = new Usuario(1L, "José", "jose", "senha", Usuario.Role.GESTOR, true);
 		Produto produto = new Produto(1L, "Produto 1", "Descrição", 50.0, true);
 		ProdutoVenda produtoVenda = new ProdutoVenda();
@@ -85,7 +119,7 @@ public class VendaServiceTest {
 
 	@Test
 	@DisplayName("Atualizar venda com sucesso")
-	void testUpdateSuccess() {
+	void UpdateSuccess() {
 		Usuario usuario = new Usuario(1L, "José", "jose", "senha", Usuario.Role.GESTOR, true);
 		Produto produto = new Produto(1L, "Produto 1", "Descrição", 50.0, true);
 		ProdutoVenda produtoVenda = new ProdutoVenda();
@@ -117,7 +151,7 @@ public class VendaServiceTest {
 
 	@Test
 	@DisplayName("Buscar venda por ID com sucesso")
-	void testFindByIdSuccess() {
+	void FindByIdSuccess() {
 		Usuario usuario = new Usuario(1L, "José", "jose", "senha", Usuario.Role.GESTOR, true);
 		Produto produto = new Produto(1L, "Produto 1", "Descrição", 50.0, true);
 		ProdutoVenda produtoVenda = new ProdutoVenda();
@@ -141,7 +175,7 @@ public class VendaServiceTest {
 
 	@Test
 	@DisplayName("Buscar todas as vendas com sucesso")
-	void testFindAll() {
+	void FindAll() {
 		Usuario usuario = new Usuario(1L, "José", "jose", "senha", Usuario.Role.GESTOR, true);
 		Produto produto = new Produto(1L, "Produto 1", "Descrição", 50.0, true);
 		ProdutoVenda produtoVenda = new ProdutoVenda();
@@ -165,7 +199,7 @@ public class VendaServiceTest {
 
 	@Test
 	@DisplayName("Deletar venda com sucesso")
-	void testDeleteSuccess() {
+	void DeleteSuccess() {
 		Long vendaId = 1L;
 		doNothing().when(vendaRepository).deleteById(vendaId);
 
@@ -176,7 +210,7 @@ public class VendaServiceTest {
 
 	@Test
 	@DisplayName("Verificar produtos com sucesso")
-	void testVerificarProdutosSuccess() {
+	void VerificarProdutosSuccess() {
 		Usuario usuario = new Usuario(1L, "José", "jose", "senha", Usuario.Role.GESTOR, true);
 		Produto produto = new Produto(1L, "Produto 1", "Descrição", 50.0, true);
 		ProdutoVenda produtoVenda = new ProdutoVenda();
@@ -194,7 +228,7 @@ public class VendaServiceTest {
 
 	@Test
 	@DisplayName("Calcular total com sucesso")
-	void testCalcularTotalSuccess() {
+	void CalcularTotalSuccess() {
 		Usuario usuario = new Usuario(1L, "José", "jose", "senha", Usuario.Role.GESTOR, true);
 		Produto produto = new Produto(1L, "Produto 1", "Descrição", 50.0, true);
 		ProdutoVenda produtoVenda = new ProdutoVenda();
@@ -214,7 +248,7 @@ public class VendaServiceTest {
 
 	@Test
 	@DisplayName("Buscar vendas por data com sucesso")
-	void testFindByData() {
+	void FindByData() {
 		Usuario usuario = new Usuario(1L, "José", "jose", "senha", Usuario.Role.GESTOR, true);
 		Produto produto = new Produto(1L, "Produto 1", "Descrição", 50.0, true);
 		ProdutoVenda produtoVenda = new ProdutoVenda();
@@ -242,7 +276,7 @@ public class VendaServiceTest {
 
 	@Test
 	@DisplayName("Buscar vendas por mês e ano com sucesso")
-	void testFindByMonthAndYear() {
+	void FindByMonthAndYear() {
 		Usuario usuario = new Usuario(1L, "José", "jose", "senha", Usuario.Role.GESTOR, true);
 		Produto produto = new Produto(1L, "Produto 1", "Descrição", 50.0, true);
 		ProdutoVenda produtoVenda = new ProdutoVenda();
@@ -294,7 +328,7 @@ public class VendaServiceTest {
 	}
 	@Test
 	@DisplayName("Lançar exceção quando o ano for maior que o ano atual")
-	void testAnoInvalido() {
+	void AnoInvalido() {
 	  
 	    int anoInvalido = LocalDateTime.now().getYear() + 1; 
 	    int mes = 5; 
@@ -310,7 +344,7 @@ public class VendaServiceTest {
 	// testes em caso de erro
 	@Test
 	@DisplayName("Erro ao tentar salvar venda com usuário inativo")
-	void testSaveUsuarioInativo() {
+	void UsuarioInativo() {
 		Usuario usuarioInativo = new Usuario(1L, "José", "jose", "senha", Usuario.Role.GESTOR, false);
 		Produto produto = new Produto(1L, "Produto 1", "Descrição", 50.0, true);
 		ProdutoVenda produtoVenda = new ProdutoVenda();
@@ -331,7 +365,7 @@ public class VendaServiceTest {
 
 	@Test
 	@DisplayName("Erro ao tentar salvar venda com lista de produtos vazia")
-	void testSaveProdutosVazios() {
+	void ProdutosVazios() {
 		Usuario usuario = new Usuario(1L, "José", "jose", "senha", Usuario.Role.GESTOR, true);
 
 		Venda venda = new Venda();
@@ -349,7 +383,7 @@ public class VendaServiceTest {
 
 	@Test
 	@DisplayName("Erro ao tentar salvar venda com usuário não encontrado")
-	void testSaveUsuarioNaoEncontrado() {
+	void UsuarioNaoEncontrado() {
 		Venda venda = new Venda();
 		venda.setUsuario(new Usuario(1L, "José", "jose", "senha", Usuario.Role.GESTOR, true));
 		venda.setProdutosVenda(Collections.emptyList());
@@ -362,32 +396,11 @@ public class VendaServiceTest {
 		assertEquals("Usuario não encontrado", thrown.getMessage());
 	}
 
-	@Test
-	@DisplayName("Erro ao tentar salvar venda com forma de pagamento inválida")
-	void testSaveFormaPagamentoInvalida() {
-		Usuario usuario = new Usuario(1L, "José", "jose", "senha", Usuario.Role.GESTOR, true);
-		Produto produto = new Produto(1L, "Produto 1", "Descrição", 50.0, true);
-		ProdutoVenda produtoVenda = new ProdutoVenda();
-		produtoVenda.setProduto(produto);
-		produtoVenda.setQuantidade(2);
-
-		Venda venda = new Venda();
-		venda.setUsuario(usuario);
-		venda.setProdutosVenda(Collections.singletonList(produtoVenda));
-		venda.setDesconto(10);
-		venda.setFormaPagamento("Forma Inválida");
-
-		when(usuarioService.findById(1L)).thenReturn(usuario);
-		when(produtoService.findById(1L)).thenReturn(produto);
-
-
-		RuntimeException thrown = assertThrows(RuntimeException.class, () -> vendaService.save(venda));
-		assertEquals("Forma de pagamento inválida", thrown.getMessage());
-	}
+	
 
 	@Test
 	@DisplayName("Erro ao tentar salvar venda com produto inativo")
-	void testSaveProdutoInativo() {
+	void SaveProdutoInativo() {
 		Usuario usuario = new Usuario(1L, "José", "jose", "senha", Usuario.Role.GESTOR, true);
 		Produto produtoInativo = new Produto(1L, "Produto 1", "Descrição", 50.0, false);
 		ProdutoVenda produtoVenda = new ProdutoVenda();
@@ -407,20 +420,11 @@ public class VendaServiceTest {
 		assertEquals("Erro: o produto Produto 1 foi desativado.", thrown.getMessage());
 	}
 
-	@Test
-	@DisplayName("Erro ao validar venda com usuário nulo")
-	void testValidarVendaUsuarioNulo() {
-		Venda venda = new Venda();
-		venda.setUsuario(null);
-		venda.setFormaPagamento("Cartão de Crédito");
 
-		RuntimeException thrown = assertThrows(RuntimeException.class, () -> vendaService.validarVenda(venda));
-		assertEquals("Erro: null foi desativado", thrown.getMessage());
-	}
 
 	@Test
 	@DisplayName("Testar a combinação de produtos duplicados em verificarProdutos")
-	void testVerificarProdutosComProdutosDuplicados() {
+	void ProdutosDuplicados() {
 
 		Produto produto = new Produto(1L, "Produto 1", "Descrição", 50.0, true);
 
@@ -439,7 +443,7 @@ public class VendaServiceTest {
 
 	@Test
 	@DisplayName("Erro ao tentar atualizar venda com usuário inativo")
-	void testUpdateUsuarioInativo() {
+	void UpdateUsuarioInativo() {
 		Usuario usuarioInativo = new Usuario(1L, "José", "jose", "senha", Usuario.Role.GESTOR, false);
 		Produto produto = new Produto(1L, "Produto 1", "Descrição", 50.0, true);
 		ProdutoVenda produtoVenda = new ProdutoVenda();
@@ -460,7 +464,7 @@ public class VendaServiceTest {
 
 	@Test
 	@DisplayName("Erro ao tentar atualizar venda não encontrada")
-	void testUpdateVendaNaoEncontrada() {
+	void UpdateVendaNaoEncontrada() {
 		Usuario usuario = new Usuario(1L, "José", "jose", "senha", Usuario.Role.GESTOR, true);
 		Produto produto = new Produto(1L, "Produto 1", "Descrição", 50.0, true);
 		ProdutoVenda produtoVenda = new ProdutoVenda();
@@ -481,7 +485,7 @@ public class VendaServiceTest {
 
 	@Test
 	@DisplayName("Erro ao buscar venda por ID não encontrada")
-	void testFindByIdNotFound() {
+	void FindByIdNotFound() {
 		when(vendaRepository.findById(1L)).thenReturn(Optional.empty());
 
 		RuntimeException thrown = assertThrows(RuntimeException.class, () -> vendaService.findById(1L));
@@ -490,7 +494,7 @@ public class VendaServiceTest {
 
 	@Test
 	@DisplayName("Erro ao verificar produtos com produto não encontrado")
-	void testVerificarProdutosProdutoNaoEncontrado() {
+	void VerificarProdutoNaoEncontrado() {
 		ProdutoVenda produtoVenda = new ProdutoVenda();
 		produtoVenda.setProduto(new Produto(1L, "Produto 1", "Descrição", 50.0, true));
 		produtoVenda.setQuantidade(2);
@@ -506,7 +510,7 @@ public class VendaServiceTest {
 
 	@Test
 	@DisplayName("Erro ao verificar produtos com produto inativo")
-	void testVerificarProdutosProdutoInativo() {
+	void VerificarProdutoInativo() {
 		Produto produtoInativo = new Produto(1L, "Produto 1", "Descrição", 50.0, false);
 		ProdutoVenda produtoVenda = new ProdutoVenda();
 		produtoVenda.setProduto(produtoInativo);
@@ -523,7 +527,7 @@ public class VendaServiceTest {
 
 	@Test
 	@DisplayName("Testar cálculo do total com produto existente (id != 0)")
-	void testCalcularTotalComProdutoExistente() {
+	void CalcularTotalComProdutoExistente() {
 		Produto produtoExistente = new Produto(0L, "Produto 1", "Descrição", 30.0, true);
 		ProdutoVenda produtoVenda = new ProdutoVenda();
 		produtoVenda.setProduto(produtoExistente);
@@ -542,7 +546,7 @@ public class VendaServiceTest {
 
 	@Test
 	@DisplayName("Deve lançar exceção quando o usuário da venda está desativado")
-	void testValidarVendaUsuarioDesativado() {
+	void ValidarVendaUsuarioDesativado() {
 		Usuario usuarioDesativado = new Usuario();
 		usuarioDesativado.setAtivo(false); 
 		usuarioDesativado.setNome("José");

@@ -67,6 +67,7 @@ public class UsuarioController {
 		} catch (Exception e) {
 			return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
 		}
+		
 	}
 
 	@DeleteMapping("/delete/{id}")

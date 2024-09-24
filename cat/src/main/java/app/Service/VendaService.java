@@ -49,7 +49,7 @@ public class VendaService {
 		this.vendaRepository.save(venda);
 		return "Venda salva com sucesso";
 	}
-
+//unitario
 	public void validarVenda(Venda venda) {
 		// Verificar se o usuário está ativo
 		if (venda.getUsuario() == null || !venda.getUsuario().isAtivo()) {
