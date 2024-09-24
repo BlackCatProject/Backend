@@ -50,7 +50,7 @@ public class ProdutoService {
 		Optional<Produto> optional = this.produtoRepository.findById(id);
 		if (optional.isPresent()) {
 			return optional.get();
-		} else return null;
+		} else throw new RuntimeException("Produto não encontrado");
 	}
 
 	public List<Produto> findAll(boolean ativo) {

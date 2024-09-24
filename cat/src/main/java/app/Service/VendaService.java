@@ -109,6 +109,7 @@ public class VendaService {
 		double valorTotal = calcularTotal(venda);
 		venda.setTotal(valorTotal);
 		venda.setData(LocalDateTime.now());
+		venda.setUsuario(usuario);
 
 		return venda;
 	}
@@ -131,20 +132,35 @@ public class VendaService {
 	}
 
 	public List<ProdutoVenda> verificarProdutos(List<ProdutoVenda> produtosVenda) {
+		
 		List<ProdutoVenda> listTemp = new ArrayList<>();
-
-		for (ProdutoVenda produtoVenda : produtosVenda) {
-			// Verificar se o produto está ativo no banco de dados
+		
+		for(ProdutoVenda produtoVenda : produtosVenda) {
+			
 			Produto produto = produtoService.findById(produtoVenda.getProduto().getId());
-
-			// Se o produto não for encontrado, lançar uma exceção
 			if (produto == null) {
 				throw new RuntimeException("Produto não encontrado");
 			}
 			// Verificar se o produto está ativo
 			if (!produto.isAtivo()) {
 				throw new RuntimeException("Erro: o produto " + produto.getNome() + " foi desativado.");
+			} else {
+				listTemp.add(produtoVenda);
 			}
+
+		}
+		
+		return juntarProdutosVendaIguais(produtosVenda);
+		
+	}
+	
+	public List<ProdutoVenda> juntarProdutosVendaIguais(List<ProdutoVenda> produtosVenda){
+		List<ProdutoVenda> listTemp = new ArrayList<>();
+
+
+		for (ProdutoVenda produtoVenda : produtosVenda) {
+			// Verificar se o produto está ativo no banco de dados
+			Produto produto = produtoVenda.getProduto();
 
 			boolean encontrou = false;
 			for (ProdutoVenda tempProdutoVenda : listTemp) {
