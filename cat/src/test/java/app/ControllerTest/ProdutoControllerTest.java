@@ -2,7 +2,8 @@ package app.ControllerTest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
 import java.util.List;
@@ -218,5 +219,25 @@ public class ProdutoControllerTest {
 
 		assertEquals(HttpStatus.BAD_REQUEST, resposta.getStatusCode());
 		assertEquals("Deu erro! Erro ao ativar produto", resposta.getBody());
+	}
+
+	// -------------------------------------------------------------------------
+	// TESTES ADICIONAIS DE VALIDATIONS:
+	@Test
+	@DisplayName("Cenário Save do Produto com Nome em Branco")
+	void cenarioSaveProdutoExcecaoNomeBlank() {
+		Produto produto = new Produto(null, "", "Descrição válida", 10.0, true);
+		assertThrows(Exception.class, () -> {
+			produtoController.save(produto);
+		});
+	}
+
+	@Test
+	@DisplayName("Cenário Save do Produto com Preço Negativo")
+	void cenarioSaveProdutoExcecaoPrecoNegativo() {
+		Produto produto = new Produto(null, "Produto válido", "Descrição válida", -1.0, true);
+		assertThrows(Exception.class, () -> {
+			produtoController.save(produto);
+		});
 	}
 }
