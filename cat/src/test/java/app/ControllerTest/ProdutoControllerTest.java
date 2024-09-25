@@ -226,7 +226,7 @@ public class ProdutoControllerTest {
 	@Test
 	@DisplayName("Cenário Save do Produto com Nome em Branco")
 	void cenarioSaveProdutoExcecaoNomeBlank() {
-		Produto produto = new Produto(null, "", "Descrição válida", 10.0, true);
+		Produto produto = new Produto(1L, "", "Descrição válida", 10.0, true);
 		assertThrows(Exception.class, () -> {
 			produtoController.save(produto);
 		});
@@ -235,7 +235,7 @@ public class ProdutoControllerTest {
 	@Test
 	@DisplayName("Cenário Save do Produto com Preço Negativo")
 	void cenarioSaveProdutoExcecaoPrecoNegativo() {
-		Produto produto = new Produto(null, "Produto válido", "Descrição válida", -1.0, true);
+		Produto produto = new Produto(1L, "Produto válido", "Descrição válida", -1.0, true);
 		assertThrows(Exception.class, () -> {
 			produtoController.save(produto);
 		});
