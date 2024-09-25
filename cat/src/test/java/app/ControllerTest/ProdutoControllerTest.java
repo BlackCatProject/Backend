@@ -2,10 +2,12 @@ package app.ControllerTest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -20,6 +22,7 @@ import org.springframework.http.ResponseEntity;
 import app.Controller.ProdutoController;
 import app.Entity.Produto;
 import app.Service.ProdutoService;
+import jakarta.validation.ConstraintViolation;
 
 @SpringBootTest
 public class ProdutoControllerTest {
@@ -219,4 +222,38 @@ public class ProdutoControllerTest {
 		assertEquals(HttpStatus.BAD_REQUEST, resposta.getStatusCode());
 		assertEquals("Deu erro! Erro ao ativar produto", resposta.getBody());
 	}
+	
+	//-------------------------------------------------------------------------
+	//TESTES ADICIONAIS DE VALIDATIONS: 
+	@Test
+    @DisplayName("VALIDAR FALHA SEM NOME")
+    void validarFalhaSemNome() {
+        Produto produto = new Produto(null, "", "Descrição válida", 10.0, true);
+
+        Set<ConstraintViolation<Produto>> violations = validator.validate(produto);
+
+        assertEquals(1, violations.size());
+        assertTrue(violations.stream().anyMatch(v -> v.getMessage().equals("O nome do produto é obrigatório")));
+    }
+
+    @Test
+    @DisplayName("VALIDAR FALHA COM PREÇO INVÁLIDO")
+    void validarFalhaComPrecoInvalido() {
+        Produto produto = new Produto(null, "Nome válido", "Descrição válida", -1.0, true);
+
+        Set<ConstraintViolation<Produto>> violations = validator.validate(produto);
+
+        assertEquals(1, violations.size());
+        assertTrue(violations.stream().anyMatch(v -> v.getMessage().equals("O preço deve ser um valor positivo")));
+    }
+}
+	
+	
+	
+	
+	
+	
+	
+	
+	
 }
