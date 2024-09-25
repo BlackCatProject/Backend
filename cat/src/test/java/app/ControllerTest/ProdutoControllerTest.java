@@ -2,6 +2,7 @@ package app.ControllerTest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
@@ -246,14 +247,4 @@ public class ProdutoControllerTest {
         assertEquals(1, violations.size());
         assertTrue(violations.stream().anyMatch(v -> v.getMessage().equals("O preço deve ser um valor positivo")));
     }
-}
-	
-	
-	
-	
-	
-	
-	
-	
-	
 }
