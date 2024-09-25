@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 
 @SpringBootTest
@@ -104,13 +105,13 @@ public class UsuarioControllerTest {
 
     @Test
 
-   @DisplayName("Find Usuario By ID Bad Request")
-   void cenarioFindByIdUsuarioBadRequest() {
+    @DisplayName("Find Usuario By ID Bad Request")
+    void cenarioFindByIdUsuarioBadRequest() {
 
-       ResponseEntity<Usuario> retorno = this.usuarioController.findById(0);
+        ResponseEntity<Usuario> retorno = this.usuarioController.findById(0);
 
         assertEquals(HttpStatus.BAD_REQUEST, retorno.getStatusCode());
-   }
+    }
 
 
     @Test
@@ -184,4 +185,33 @@ public class UsuarioControllerTest {
         assertEquals(HttpStatus.BAD_REQUEST, retorno.getStatusCode());
     }
 
+    @Test
+    @DisplayName("Cenário Save do Usuario com Nome em Branco")
+    void cenarioSaveUsuarioExcecaoNomeBlank() {
+        Usuario usuario = new Usuario(1, "", "Marci", "Senha123", Usuario.Role.FUNCIONARIO, true, null);
+
+        assertThrows(Exception.class, () -> {usuarioController.save(usuario);
+        });
+
+
+    }
+
+    @Test
+    @DisplayName("Cenário Save do Usuario com Login Muito Curto")
+    void cenarioSaveUsuarioExcecaoLoginCurto() {
+        Usuario usuario = new Usuario(1, "", "Ma", "Senha123", Usuario.Role.FUNCIONARIO, true, null);
+
+        assertThrows(Exception.class, () -> {usuarioController.save(usuario);
+        });
+    }
+
 }
+
+
+
+
+
+
+
+
+

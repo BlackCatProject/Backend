@@ -3,11 +3,13 @@ package app.Service;
 import java.util.List;
 import java.util.Optional;
 
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import app.Entity.Usuario;
 import app.Repository.UsuarioRepository;
+import org.springframework.validation.annotation.Validated;
 
 @Service
 public class UsuarioService {

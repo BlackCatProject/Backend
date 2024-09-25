@@ -2,9 +2,11 @@ package app.Controller;
 
 import java.util.List;
 
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import app.Entity.Usuario;
 import app.Service.UsuarioService;
 
+@Validated
 @RestController
 @RequestMapping("api/usuario")
 public class UsuarioController {
@@ -25,8 +28,8 @@ public class UsuarioController {
 	@Autowired
 	private UsuarioService usuarioService;
 
-	 @PostMapping("/save")
-	    public ResponseEntity<String> save(@RequestBody Usuario usuario) {
+	@PostMapping("/save")
+	    public ResponseEntity<String> save(@RequestBody @Valid Usuario usuario) {
 	        try {
 	            String message = this.usuarioService.save(usuario);
 	            if (message.contains("salvo")) {
