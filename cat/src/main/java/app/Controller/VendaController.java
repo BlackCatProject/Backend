@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,6 +26,7 @@ import jakarta.validation.Valid;
 @Validated
 @RestController
 @RequestMapping("/api/venda")
+@CrossOrigin(origins = "http://localhost:4200")
 public class VendaController {
 	@Autowired
 	private VendaService vendaService;
@@ -119,4 +121,36 @@ public class VendaController {
 		}
 	}
 
+
+    @GetMapping("/mensal/{ano}/{mes}")
+    public ResponseEntity<Double> getVendasMensais(@PathVariable int ano, @PathVariable int mes) {
+        try {
+            double vendasMensais = vendaService.getVendasMensais(ano, mes);
+            return new ResponseEntity<>(vendasMensais, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(0.0, HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping("/semanal")
+    public ResponseEntity<Double> getVendasSemanais() {
+        try {
+            double vendasSemanais = vendaService.getVendasSemanais();
+            return new ResponseEntity<>(vendasSemanais, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(0.0, HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping("/anual/{ano}")
+    public ResponseEntity<Double> getVendasAnuais(@PathVariable int ano) {
+        try {
+            double vendasAnuais = vendaService.getVendasAnuais(ano);
+            return new ResponseEntity<>(vendasAnuais, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(0.0, HttpStatus.BAD_REQUEST);
+        }
+    }
+
+   
 }

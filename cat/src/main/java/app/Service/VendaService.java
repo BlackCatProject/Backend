@@ -1,7 +1,10 @@
 package app.Service;
 
+import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
+import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -210,31 +213,64 @@ public class VendaService {
 	}
 
 	public List<Venda> findByMonthAndYear(int mes, int ano) {
-		
-		if(mes > 12 || mes < 0){
-			throw new RuntimeException("O mes inserido não é válido");
-		}
-		
-		if(ano > LocalDateTime.now().getYear()){
-			throw new RuntimeException("O ano inserido não é válido");
-		}
-		
-		if(ano <= LocalDateTime.now().getYear() && mes > LocalDateTime.now().getMonth().getValue()){
-			throw new RuntimeException("O mês selecionado é posterior a data atual");
-		}
-		
-		// Definindo o primeiro e o último dia do mês
-		YearMonth yearMonth = YearMonth.of(ano, mes);
-		LocalDateTime startDate = yearMonth.atDay(1).atStartOfDay();
-		LocalDateTime endDate = yearMonth.atEndOfMonth().atTime(23, 59, 59);
+	    // Valida o mês
+	    if (mes < 1 || mes > 12) {
+	        throw new RuntimeException("O mês inserido não é válido.");
+	    }
 
-		return vendaRepository.findByDataBetween(startDate, endDate);
+	    // Valida o ano
+	    if (ano < 1900 || ano > LocalDateTime.now().getYear()) {
+	        throw new RuntimeException("O ano inserido não é válido.");
+	    }
+
+	    // Valida se o mês e ano são maiores que a data atual
+	    if (ano == LocalDateTime.now().getYear() && mes > LocalDateTime.now().getMonth().getValue()) {
+	        throw new RuntimeException("O mês selecionado é posterior à data atual.");
+	    }
+
+	    // Define as datas de início e fim do mês
+	    YearMonth yearMonth = YearMonth.of(ano, mes);
+	    LocalDateTime startDate = yearMonth.atDay(1).atStartOfDay();
+	    LocalDateTime endDate = yearMonth.atEndOfMonth().atTime(23, 59, 59);
+
+	    return vendaRepository.findByDataBetween(startDate, endDate);
 	}
+
 
 	public List<Venda> findByUsuarioId(long usuarioId) {
 		
 		return vendaRepository.findByUsuarioId(usuarioId);
 	}
+	
+
+    // Método para vendas mensais
+    public double getVendasMensais(int ano, int mes) {
+        LocalDate startDate = LocalDate.of(ano, mes, 1);
+        LocalDate endDate = startDate.with(TemporalAdjusters.lastDayOfMonth());
+        List<Venda> vendas = vendaRepository.findByDataBetween(startDate.atStartOfDay(), endDate.atTime(23, 59, 59));
+
+        return vendas.stream().mapToDouble(Venda::getTotal).sum();
+    }
+
+    // Método para vendas semanais
+    public double getVendasSemanais() {
+        LocalDate startOfWeek = LocalDate.now().with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+        LocalDate endOfWeek = LocalDate.now().with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
+        List<Venda> vendas = vendaRepository.findByDataBetween(startOfWeek.atStartOfDay(), endOfWeek.atTime(23, 59, 59));
+
+        return vendas.stream().mapToDouble(Venda::getTotal).sum();
+    }
+
+    // Método para vendas anuais
+    public double getVendasAnuais(int ano) {
+        LocalDate startOfYear = LocalDate.of(ano, 1, 1);
+        LocalDate endOfYear = startOfYear.with(TemporalAdjusters.lastDayOfYear());
+        List<Venda> vendas = vendaRepository.findByDataBetween(startOfYear.atStartOfDay(), endOfYear.atTime(23, 59, 59));
+
+        return vendas.stream().mapToDouble(Venda::getTotal).sum();
+    }
+
+   
 
 
 

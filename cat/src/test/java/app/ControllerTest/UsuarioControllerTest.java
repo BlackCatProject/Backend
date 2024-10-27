@@ -2,23 +2,18 @@ package app.ControllerTest;
 
 
 import app.Controller.UsuarioController;
-import app.Entity.Produto;
-import app.Entity.ProdutoVenda;
 import app.Entity.Usuario;
-import app.Entity.Venda;
 import app.Repository.UsuarioRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -35,7 +30,6 @@ public class UsuarioControllerTest {
     @MockBean
     UsuarioRepository usuarioRepository;
 
-    private Usuario usuario;
 
     @BeforeEach
     void setUp() {
