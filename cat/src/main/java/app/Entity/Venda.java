@@ -41,7 +41,7 @@ public class Venda {
 	private String formaPagamento;
 	
 	@ManyToOne
-	@JsonIgnoreProperties("venda")
+	@JsonIgnoreProperties("vendas")
 	@NotNull(message = "O nome não pode ser nulo, vazio ou apenas espaços em branco") 
 	private Usuario usuario;
 
