@@ -56,6 +56,10 @@ public class ProdutoService {
 	public List<Produto> findAll(boolean ativo) {
 		return this.produtoRepository.findByAtivo(ativo);
 	}
+	
+	public List<Produto> findByNome(String nome) {
+		return this.produtoRepository.findByNomeContainingIgnoreCaseAndAtivoTrue(nome);
+	}
 
 	public String delete(Long id) {
 		this.produtoRepository.deleteById(id);

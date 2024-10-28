@@ -64,6 +64,16 @@ public class ProdutoController {
 				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 			}
 		}
+		
+		@GetMapping("/findByNome")
+		public ResponseEntity<List<Produto>> findByNome(@RequestParam String nome) {
+			try {
+				List<Produto> lista = this.produtoService.findByNome(nome);
+				return new ResponseEntity<>(lista, HttpStatus.OK);
+			} catch (Exception e) {
+				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			}
+		}
 
 		@DeleteMapping("/delete/{id}")
 		public ResponseEntity<String> delete(@PathVariable Long id) {
