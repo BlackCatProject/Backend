@@ -12,6 +12,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -35,6 +37,8 @@ public class Venda {
 	
 	private LocalDateTime data;
 	
+	@Min(value = 0, message = "O valor do desconto não pode ser negativo")
+	@Max(value = 100, message = "O valor do desconto não pode ser maior que 100%")
 	private int desconto;
 
 	@NotBlank(message = "A forma de pagamento é obrigatória") 
