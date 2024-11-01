@@ -36,7 +36,7 @@ public class ProdutoController {
 	    }
 	
 	 @PutMapping("/update/{id}")
-	    public ResponseEntity<String> update(@RequestBody Produto produto, @PathVariable Long id) {
+	    public ResponseEntity<String> update(@Valid @RequestBody Produto produto, @PathVariable Long id) {
 	        try {
 	            String msn = this.produtoService.update(produto, id);
 	            return new ResponseEntity<>(msn, HttpStatus.OK);
