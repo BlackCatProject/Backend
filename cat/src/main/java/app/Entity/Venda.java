@@ -3,6 +3,7 @@ package app.Entity;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import app.auth.Usuario;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.CascadeType;

@@ -8,21 +8,15 @@ import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
-import java.util.Random;
-
-import javax.management.RuntimeErrorException;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import app.Entity.Produto;
 import app.Entity.ProdutoVenda;
-import app.Entity.Usuario;
+import app.auth.Usuario;
 import app.Entity.Venda;
-import app.Repository.UsuarioRepository;
 import app.Repository.VendaRepository;
 
 @Service

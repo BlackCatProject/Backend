@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import app.Entity.Usuario;
+import app.auth.Usuario;
 import app.Service.UsuarioService;
 
 @Validated

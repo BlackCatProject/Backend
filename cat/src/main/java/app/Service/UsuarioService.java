@@ -3,18 +3,20 @@ package app.Service;
 import java.util.List;
 import java.util.Optional;
 
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import app.Entity.Usuario;
+import app.auth.Usuario;
 import app.Repository.UsuarioRepository;
-import org.springframework.validation.annotation.Validated;
 
 @Service
 public class UsuarioService {
 	@Autowired
 	private UsuarioRepository usuarioRepository;
+
+ @Autowired
+ private BCryptPasswordEncoder bCryptPasswordEncoder;
 
 	public String save(Usuario usuario) {
 
@@ -22,7 +24,9 @@ public class UsuarioService {
 			throw new RuntimeException("Login ou Senha já está em uso");
 		}
 
+
 		usuario.setAtivo(true);
+		usuario.setSenha(this.bCryptPasswordEncoder.encode(usuario.getSenha()));
 		this.usuarioRepository.save(usuario);
 		return "Usuário salvo com sucesso";
 	}

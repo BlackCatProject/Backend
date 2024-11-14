@@ -22,13 +22,11 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import com.mysql.cj.exceptions.ExceptionInterceptorChain;
-
 import app.Controller.VendaController;
 import app.Entity.Produto;
 import app.Entity.ProdutoVenda;
-import app.Entity.Usuario;
-import app.Entity.Usuario.Role;
+import app.auth.Usuario;
+import app.auth.Usuario.Role;
 import app.Entity.Venda;
 import app.Repository.VendaRepository;
 import app.Service.ProdutoService;
