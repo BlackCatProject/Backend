@@ -2,7 +2,7 @@ package app.ControllerTest;
 
 
 import app.Controller.UsuarioController;
-import app.Entity.Usuario;
+import app.auth.Usuario;
 import app.Repository.UsuarioRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

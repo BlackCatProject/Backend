@@ -17,7 +17,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 
 import app.Entity.Produto;
 import app.Entity.ProdutoVenda;
-import app.Entity.Usuario;
+import app.auth.Usuario;
 import app.Entity.Venda;
 import app.Repository.VendaRepository;
 import app.Service.ProdutoService;

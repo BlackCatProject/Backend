@@ -1,6 +1,6 @@
 package app.ServiceTest;
 
-import app.Entity.Usuario;
+import app.auth.Usuario;
 import app.Repository.UsuarioRepository;
 import app.Service.UsuarioService;
 import org.junit.jupiter.api.Assertions;
