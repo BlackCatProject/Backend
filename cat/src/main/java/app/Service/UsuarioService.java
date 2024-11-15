@@ -38,6 +38,12 @@ public class UsuarioService {
 	    if (conferirUser(usuario)) {
 	        throw new RuntimeException("Login ou Senha já está em uso");
 	    }
+	    
+	    Usuario userInDB = findById(id);
+	    
+	    if(!bCryptPasswordEncoder.matches(usuario.getSenha(),userInDB.getSenha())) {
+	    	usuario.setSenha(this.bCryptPasswordEncoder.encode(usuario.getSenha()));
+	    }
 
 		this.usuarioRepository.save(usuario);
 		return "Atualizado com sucesso";
@@ -46,8 +52,10 @@ public class UsuarioService {
 	public boolean conferirUser(Usuario usuario) {
 		Optional<Usuario> existingUser = usuarioRepository.findByLogin(usuario.getLogin());
 		// Verifica se o usuário existe e se o ID é diferente do ID do usuário que está sendo atualizado
+		
 		return existingUser.isPresent() && existingUser.get().getId() != usuario.getId();
 	}
+	
 
 	public Usuario findById(long id) {
 		Optional<Usuario> optional = this.usuarioRepository.findById(id);
