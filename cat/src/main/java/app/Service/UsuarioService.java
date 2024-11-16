@@ -46,6 +46,7 @@ public class UsuarioService {
 	    }
 
 		this.usuarioRepository.save(usuario);
+		System.out.println("Chegou aqui");
 		return "Atualizado com sucesso";
 	}
 

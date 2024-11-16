@@ -5,6 +5,8 @@ import java.util.Collection;
 import java.util.List;
 
 import app.Entity.Venda;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.Entity;
@@ -74,6 +76,7 @@ public class Usuario implements UserDetails {
 	private List<Venda> vendas;
 
 
+	@JsonIgnore
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		List<GrantedAuthority> authorities = new ArrayList<>();
@@ -114,7 +117,7 @@ public class Usuario implements UserDetails {
 	@Override
 	public boolean isEnabled() {
 		// TODO Auto-generated method stub
-		return true;
+		return this.ativo;
 	}
 
 
