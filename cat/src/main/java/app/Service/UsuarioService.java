@@ -38,16 +38,19 @@ public class UsuarioService {
 	    if (conferirUser(usuario)) {
 	        throw new RuntimeException("Login ou Senha já está em uso");
 	    }
+	    Optional<Usuario> optional = this.usuarioRepository.findById(id);
+		if (optional.isPresent()) {
+			Usuario userInDB = findById(id);
+			if(!bCryptPasswordEncoder.matches(usuario.getSenha(),userInDB.getSenha())) {
+		    	usuario.setSenha(this.bCryptPasswordEncoder.encode(usuario.getSenha()));
+		    }
+			this.usuarioRepository.save(usuario);
+			System.out.println("Chegou aqui");
+			return "Atualizado com sucesso";
+		}else {
+			throw new RuntimeException("Usúario não encontrado");
+		}
 	    
-	    Usuario userInDB = findById(id);
-	    
-	    if(!bCryptPasswordEncoder.matches(usuario.getSenha(),userInDB.getSenha())) {
-	    	usuario.setSenha(this.bCryptPasswordEncoder.encode(usuario.getSenha()));
-	    }
-
-		this.usuarioRepository.save(usuario);
-		System.out.println("Chegou aqui");
-		return "Atualizado com sucesso";
 	}
 
 	public boolean conferirUser(Usuario usuario) {
@@ -61,32 +64,43 @@ public class UsuarioService {
 	public Usuario findById(long id) {
 		Optional<Usuario> optional = this.usuarioRepository.findById(id);
 		if (optional.isPresent()) {
+			optional.get().setSenha("");
 			return optional.get();
-		} else
+		}else
 			throw new RuntimeException("Usúario não encontrado");
 	}
 
 	public List<Usuario> findAll(boolean ativo) {
 		return this.usuarioRepository.findByAtivo(ativo);
 	}
-
+	
 	public String delete(Long id) {
 		this.usuarioRepository.deleteById(id);
 		return "Usuario deletado com sucesso";
 	}
 	
 	public String disable(Long id) {
-		Usuario usuarioInDB = this.findById(id);
-		usuarioInDB.setAtivo(false);
-		this.usuarioRepository.save(usuarioInDB);
-		return "Usuário desativado com sucesso!";
+		Optional<Usuario> optional = this.usuarioRepository.findById(id);
+		if(optional.isPresent()) {
+			Usuario usuarioInDB = optional.get();
+			usuarioInDB.setAtivo(false);
+			this.usuarioRepository.save(usuarioInDB);
+			return "Usuário desativado com sucesso!";
+		}else{
+			throw new RuntimeException("Usúario não encontrado");
+		}
 	}
 	
 	public String enable(Long id) {
-		Usuario usuarioInDB = this.findById(id);
-		usuarioInDB.setAtivo(true);
-		this.usuarioRepository.save(usuarioInDB);
-		return "Usuário ativado com sucesso!";
+		Optional<Usuario> optional = this.usuarioRepository.findById(id);
+		if(optional.isPresent()) {
+			Usuario usuarioInDB = optional.get();
+			usuarioInDB.setAtivo(true);
+			this.usuarioRepository.save(usuarioInDB);
+			return "Usuário ativado com sucesso!";
+		}else{
+			throw new RuntimeException("Usúario não encontrado");
+		}	
 	}
 
 }
