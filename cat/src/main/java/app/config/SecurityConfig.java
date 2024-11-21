@@ -37,7 +37,7 @@ public class SecurityConfig  {
 		.cors(AbstractHttpConfigurer::disable)
 		.authorizeHttpRequests((requests) -> requests
 				.requestMatchers("/api/login/logar").permitAll()
-				.requestMatchers("/api/usuario/*").hasRole("GESTOR")
+				.requestMatchers("/api/usuario/save").permitAll()
 				.anyRequest().authenticated())
 		.authenticationProvider(authenticationProvider)
 		.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
