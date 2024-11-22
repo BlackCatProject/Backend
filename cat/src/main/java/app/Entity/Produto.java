@@ -50,5 +50,7 @@ public class Produto {
 	        this.preco = preco;
 	        this.ativo = ativo;
 	    }
+	 
+	 
 	
 }

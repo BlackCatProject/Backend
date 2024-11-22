@@ -11,12 +11,14 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import app.Entity.Produto;
 import app.Entity.ProdutoVenda;
 import app.auth.Usuario;
 import app.Entity.Venda;
+import app.Repository.UsuarioRepository;
 import app.Repository.VendaRepository;
 
 @Service
@@ -264,8 +266,11 @@ public class VendaService {
         return vendas.stream().mapToDouble(Venda::getTotal).sum();
     }
 
+    public List<Venda> findByUsuarioId(Long idUsuario) {
+        return vendaRepository.findByUsuarioId(idUsuario);
+    }
+
+
    
-
-
 
 }
