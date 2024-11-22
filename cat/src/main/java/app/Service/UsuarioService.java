@@ -71,6 +71,13 @@ public class UsuarioService {
 	}
 
 	public List<Usuario> findAll(boolean ativo) {
+		
+		List<Usuario> users = this.usuarioRepository.findByAtivo(ativo);
+		
+		for(Usuario user : users) {
+			user.setSenha("");
+		}
+		
 		return this.usuarioRepository.findByAtivo(ativo);
 	}
 	

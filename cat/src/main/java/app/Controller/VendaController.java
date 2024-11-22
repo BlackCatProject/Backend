@@ -33,12 +33,12 @@ public class VendaController {
 
 	@PostMapping("/save")
 	public ResponseEntity<String> save(@RequestBody @Valid Venda venda) {
-		try {
+//		try {
 			String msn = this.vendaService.save(venda);
 			return new ResponseEntity<>(msn, HttpStatus.OK);
-		} catch (Exception e) {
-			return new ResponseEntity<>("Deu Erro! " + e.getMessage(), HttpStatus.BAD_REQUEST);
-		}
+//		} catch (Exception e) {
+//			return new ResponseEntity<>("Deu Erro! " + e.getMessage(), HttpStatus.BAD_REQUEST);
+//		}
 	}
 
 	@PutMapping("/update/{id}")

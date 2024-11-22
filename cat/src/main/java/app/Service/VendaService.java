@@ -16,7 +16,9 @@ import org.springframework.stereotype.Service;
 import app.Entity.Produto;
 import app.Entity.ProdutoVenda;
 import app.auth.Usuario;
+import lombok.var;
 import app.Entity.Venda;
+import app.Repository.UsuarioRepository;
 import app.Repository.VendaRepository;
 
 @Service
@@ -28,6 +30,9 @@ public class VendaService {
 	private ProdutoService produtoService;
 	@Autowired
 	private UsuarioService usuarioService;
+	
+	@Autowired 
+	private UsuarioRepository usuarioRepository;
 
 	public String save(Venda venda) {
 
@@ -42,7 +47,6 @@ public class VendaService {
 				venda.getProdutosVenda().get(i).setVenda(venda);
 			}
 		}
-
 		this.vendaRepository.save(venda);
 		return "Venda salva com sucesso";
 	}
@@ -88,7 +92,8 @@ public class VendaService {
 	private Venda registrarVenda(Venda venda) {
 
 		// Verificar se o usuário está ativo no banco de dados
-		Usuario usuario = usuarioService.findById(venda.getUsuario().getId());
+		Usuario usuario = usuarioRepository.findById(venda.getUsuario().getId()).get();
+		
 
 		if (usuario == null) {
 			throw new RuntimeException("Usuario não encontrado");
@@ -105,8 +110,8 @@ public class VendaService {
 		venda.setProdutosVenda(this.verificarProdutos(venda.getProdutosVenda()));
 		double valorTotal = calcularTotal(venda);
 		venda.setTotal(valorTotal);
-		venda.setData(LocalDateTime.now());
 		venda.setUsuario(usuario);
+		venda.setData(LocalDateTime.now());
 
 		return venda;
 	}
