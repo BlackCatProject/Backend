@@ -1,11 +1,12 @@
 package app.Service;
-
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.Authentication;  // Corrigido para a importação correta do Spring
 
 import app.auth.Usuario;
 import app.Repository.UsuarioRepository;
@@ -110,4 +111,10 @@ public class UsuarioService {
 		}	
 	}
 
+	 public Usuario getUsuarioLogado() {
+	        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+	        String username = authentication.getName(); // Aqui assumimos que o login é o username
+	        return usuarioRepository.findByLogin(username)
+	                .orElseThrow(() -> new RuntimeException("Usuário logado não encontrado"));
+	    }
 }
