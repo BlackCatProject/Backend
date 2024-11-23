@@ -173,7 +173,8 @@ public class VendaController {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
-
-   
+    @GetMapping("/dia/quantidade")
+    public long getNumeroVendasDiaPorUsuario(@RequestParam long usuarioId) {
+        return vendaService.getNumeroVendasDiaPorUsuario(usuarioId);
+    }
 }

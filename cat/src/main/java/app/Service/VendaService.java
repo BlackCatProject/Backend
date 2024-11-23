@@ -7,8 +7,11 @@ import java.time.YearMonth;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -275,6 +278,19 @@ public class VendaService {
     }
 
 
-   
+    
+    public long getNumeroVendasDiaPorUsuario(long usuarioId) {
+        // Obtém a data atual (hoje)
+        LocalDate hoje = LocalDate.now();
 
+        // Define o início e o final do dia
+        LocalDateTime inicioDoDia = hoje.atStartOfDay();
+        LocalDateTime fimDoDia = hoje.atTime(23, 59, 59);
+
+        // Busca as vendas do usuário no intervalo de tempo do dia
+        List<Venda> vendasDoDia = vendaRepository.findByDataBetweenAndUsuarioId(inicioDoDia, fimDoDia, usuarioId);
+
+        // Retorna o número de vendas (tamanho da lista)
+        return vendasDoDia.size();
+    }
 }

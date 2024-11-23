@@ -113,7 +113,7 @@ public class UsuarioService {
 
 	 public Usuario getUsuarioLogado() {
 	        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-	        String username = authentication.getName(); // Aqui assumimos que o login é o username
+	        String username = authentication.getName(); 
 	        return usuarioRepository.findByLogin(username)
 	                .orElseThrow(() -> new RuntimeException("Usuário logado não encontrado"));
 	    }
