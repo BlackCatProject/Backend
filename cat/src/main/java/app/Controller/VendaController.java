@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import app.Entity.Venda;
 import app.Service.UsuarioService;
 import app.Service.VendaService;
-import app.auth.Usuario;
+
 import jakarta.validation.Valid;
 
 @Validated
@@ -32,18 +32,18 @@ import jakarta.validation.Valid;
 public class VendaController {
 	@Autowired
 	private VendaService vendaService;
-
+	
 	@Autowired
-	private UsuarioService usuarioService;  // Injeção do serviço de usuário
-
+	UsuarioService usuarioService;
+	
 	@PostMapping("/save")
 	public ResponseEntity<String> save(@RequestBody @Valid Venda venda) {
-//		try {
+		try {
 			String msn = this.vendaService.save(venda);
 			return new ResponseEntity<>(msn, HttpStatus.OK);
-//		} catch (Exception e) {
-//			return new ResponseEntity<>("Deu Erro! " + e.getMessage(), HttpStatus.BAD_REQUEST);
-//		}
+		} catch (Exception e) {
+			return new ResponseEntity<>("Deu Erro! " + e.getMessage(), HttpStatus.BAD_REQUEST);
+		}
 	}
 
 	@PutMapping("/update/{id}")
@@ -156,7 +156,7 @@ public class VendaController {
             return new ResponseEntity<>(0.0, HttpStatus.BAD_REQUEST);
         }
     }
-    
+
     @GetMapping("/historico-vendas")
     public ResponseEntity<List<Venda>> getHistoricoVendasFuncionario() {
         try {
