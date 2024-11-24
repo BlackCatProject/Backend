@@ -273,11 +273,10 @@ public class VendaService {
         return vendas.stream().mapToDouble(Venda::getTotal).sum();
     }
 
-    public List<Venda> findByUsuarioId(Long idUsuario) {
-        return vendaRepository.findByUsuarioId(idUsuario);
+    public List<Venda> getVendasDoUsuarioLogado() {
+        Usuario usuarioLogado = usuarioService.getUsuarioLogado(); 
+        return vendaRepository.findByUsuarioId(usuarioLogado.getId());  
     }
-
-
     
     public long getNumeroVendasDiaPorUsuario(long usuarioId) {
         // Obtém a data atual (hoje)
