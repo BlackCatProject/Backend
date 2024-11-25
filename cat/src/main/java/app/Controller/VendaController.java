@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import app.Entity.Venda;
 import app.Service.UsuarioService;
 import app.Service.VendaService;
-import app.auth.Usuario;
+
 import jakarta.validation.Valid;
 
 @Validated
@@ -160,10 +160,8 @@ public class VendaController {
     @GetMapping("/historico-vendas")
     public ResponseEntity<List<Venda>> getHistoricoVendasFuncionario() {
         try {
-            Usuario usuarioLogado = usuarioService.getUsuarioLogado();
+              List<Venda> vendasFuncionario = vendaService.getVendasDoUsuarioLogado();
 
-            List<Venda> vendasFuncionario = vendaService.findByUsuarioId(usuarioLogado.getId());
-            
             if (vendasFuncionario.isEmpty()) {
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
             }
@@ -174,6 +172,7 @@ public class VendaController {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
     @GetMapping("/dia/quantidade")
     public long getNumeroVendasDiaPorUsuario(@RequestParam long usuarioId) {
         return vendaService.getNumeroVendasDiaPorUsuario(usuarioId);
