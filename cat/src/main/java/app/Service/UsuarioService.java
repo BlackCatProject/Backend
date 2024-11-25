@@ -3,6 +3,8 @@ package app.Service;
 import java.util.List;
 import java.util.Optional;
 
+import javax.management.RuntimeErrorException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -11,6 +13,7 @@ import org.springframework.security.core.Authentication; // Corrigido para a imp
 
 import app.auth.LoginService;
 import app.auth.Usuario;
+import app.reponse.UserUpdateResponse;
 import app.Repository.UsuarioRepository;
 
 @Service
@@ -20,7 +23,9 @@ public class UsuarioService {
 
 	@Autowired
 	private BCryptPasswordEncoder bCryptPasswordEncoder;
-	
+
+	@Autowired
+	private LoginService loginService;
 
 	public String save(Usuario usuario) {
 
@@ -34,23 +39,38 @@ public class UsuarioService {
 		return "Usuário salvo com sucesso";
 	}
 
-	public String update(Usuario usuario, long id) {
+	public UserUpdateResponse update(Usuario usuario, long id) {
 		// Define o ID no objeto usuário antes de verificar a existência de login
 		// duplicado
 		usuario.setId(id);
+
+		String token = "";
+		String msg = "";
+
+		Usuario userLogado = getUsuarioLogado();
 
 		if (conferirUser(usuario)) {
 			throw new RuntimeException("Login ou Senha já está em uso");
 		}
 		Optional<Usuario> optional = this.usuarioRepository.findById(id);
+		System.out.println(optional.get().getPassword());
+
 		if (optional.isPresent()) {
-			Usuario userInDB = findById(id);
-			if (!bCryptPasswordEncoder.matches(usuario.getSenha(), userInDB.getSenha())) {
+			Usuario userInDB = optional.get();
+			if (!bCryptPasswordEncoder.matches(usuario.getSenha(), userInDB.getSenha())
+					&& !usuario.getSenha().isEmpty()) {
 				usuario.setSenha(this.bCryptPasswordEncoder.encode(usuario.getSenha()));
+			} else {
+				usuario.setSenha(userInDB.getSenha());
 			}
-			this.usuarioRepository.save(usuario);
-			System.out.println("Chegou aqui");
-			return "Atualizado com sucesso";
+			usuario = this.usuarioRepository.save(usuario);
+
+			if (usuario.getId() == userLogado.getId()) {
+				token = loginService.refreshToken(usuario);
+			}
+
+			msg = "Atualizado com sucesso";
+			return new UserUpdateResponse(msg, token);
 		} else {
 			throw new RuntimeException("Usúario não encontrado");
 		}
@@ -91,10 +111,10 @@ public class UsuarioService {
 	}
 
 	public String disable(Long id) {
-		
+
 		Usuario userLogado = this.getUsuarioLogado();
 		System.out.println(userLogado.getNome());
-		
+
 		Optional<Usuario> optional = this.usuarioRepository.findById(id);
 		if (optional.isPresent()) {
 			Usuario usuarioInDB = optional.get();
@@ -122,11 +142,15 @@ public class UsuarioService {
 		}
 	}
 
-
-	 public Usuario getUsuarioLogado() {
-	        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-	        String username = authentication.getName(); 
-	        return usuarioRepository.findByLogin(username)
-	                .orElseThrow(() -> new RuntimeException("Usuário logado não encontrado"));
-	    }
+	public Usuario getUsuarioLogado() {
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		String username = authentication.getName();
+		Optional<Usuario> optional = usuarioRepository.findByLogin(username);
+		if (optional.isPresent()) {
+			return optional.get();
+		} else {
+			return null;
+		}
+	}
+	
 }

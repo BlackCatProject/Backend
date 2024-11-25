@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import app.auth.Usuario;
+import app.reponse.UserUpdateResponse;
 import app.Service.UsuarioService;
 
 @Validated
@@ -47,12 +48,12 @@ public class UsuarioController {
 	    }
 
 	@PutMapping("/update/{id}")
-	public ResponseEntity<String> update(@RequestBody Usuario usuario, @PathVariable Long id) {
+	public ResponseEntity<UserUpdateResponse> update(@RequestBody Usuario usuario, @PathVariable Long id) {
 		try {
-			String msn = this.usuarioService.update(usuario, id);
-			return new ResponseEntity<>(msn, HttpStatus.OK);
+			UserUpdateResponse response = this.usuarioService.update(usuario, id);
+			return new ResponseEntity<>(response, HttpStatus.OK);
 		} catch (Exception e) {
-			return new ResponseEntity<>("Erro ao atualizar usuário! " + e.getMessage(), HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>(null , HttpStatus.BAD_REQUEST);
 		}
 	}
 

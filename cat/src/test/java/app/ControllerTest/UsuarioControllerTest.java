@@ -3,6 +3,7 @@ package app.ControllerTest;
 
 import app.Controller.UsuarioController;
 import app.auth.Usuario;
+import app.reponse.UserUpdateResponse;
 import app.Repository.UsuarioRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -70,9 +71,9 @@ public class UsuarioControllerTest {
     void cenarioUpdateUsuario() {
 
         Usuario usuario = new Usuario(1, "Marcela Garcia", "Marci", "Senha123", Usuario.Role.FUNCIONARIO, true, null);
-        ResponseEntity<String> retorno = usuarioController.update(usuario, 1L);
+        ResponseEntity<UserUpdateResponse> retorno = usuarioController.update(usuario, 1L);
 
-        assertEquals("Atualizado com sucesso", retorno.getBody());
+        assertEquals("Atualizado com sucesso", retorno.getBody().getMessage());
         assertEquals(HttpStatus.OK, retorno.getStatusCode());
     }
 
@@ -82,7 +83,7 @@ public class UsuarioControllerTest {
 
         Usuario usuario = null;
 
-        ResponseEntity<String> retorno = usuarioController.update(usuario, 1L);
+        ResponseEntity<UserUpdateResponse> retorno = usuarioController.update(usuario, 1L);
         assertEquals(HttpStatus.BAD_REQUEST, retorno.getStatusCode());
     }
 

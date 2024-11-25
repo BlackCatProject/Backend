@@ -18,7 +18,6 @@ public class LoginService {
 	@Autowired
 	private AuthenticationManager authenticationManager;
 
-
 	public String logar(Login login) {
 		authenticationManager.authenticate(
 				new UsernamePasswordAuthenticationToken(
@@ -31,5 +30,17 @@ public class LoginService {
 		
 		return jwtToken;
 	}
+	
+	public String refreshToken(Usuario usuario) {
+
+	    Usuario user = repository.findByLogin(usuario.getLogin())
+	            .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+
+	    String jwtToken = jwtService.generateToken(user);
+
+	    return jwtToken;
+	}
+
+
 
 }
