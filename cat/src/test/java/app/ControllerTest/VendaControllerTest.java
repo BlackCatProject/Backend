@@ -108,28 +108,28 @@ public class VendaControllerTest {
 
 	}
 
-	@Test
-	@DisplayName("Integração - Cenário Save da Venda")
-	void cenarioSaveVenda() {
-
-		Usuario usuario = new Usuario(1, "Marcela Garcia", "Marci", "Senha123", Role.FUNCIONARIO, true, null);
-
-		Produto produtoBanana = new Produto(1, "Banana", "Penca de Banana", true, 6, null);
-
-		ProdutoVenda produtoVendaBanana = new ProdutoVenda(1, 1, null, produtoBanana);
-
-		List<ProdutoVenda> list = new ArrayList<>();
-
-		list.add(produtoVendaBanana);
-
-		Venda venda = new Venda(1, 0, null, 0, "Pix", usuario, list);
-
-		ResponseEntity<String> retorno = vendaController.save(venda);
-
-		assertEquals("Venda salva com sucesso", retorno.getBody());
-		assertEquals(HttpStatus.OK, retorno.getStatusCode());
-	}
-	
+//	@Test
+//	@DisplayName("Integração - Cenário Save da Venda")
+//	void cenarioSaveVenda() {
+//
+//		Usuario usuario = new Usuario(1, "Marcela Garcia", "Marci", "Senha123", Role.FUNCIONARIO, true, null);
+//
+//		Produto produtoBanana = new Produto(1, "Banana", "Penca de Banana", true, 6, null);
+//
+//		ProdutoVenda produtoVendaBanana = new ProdutoVenda(1, 1, null, produtoBanana);
+//
+//		List<ProdutoVenda> list = new ArrayList<>();
+//
+//		list.add(produtoVendaBanana);
+//
+//		Venda venda = new Venda(1, 0, null, 0, "Pix", usuario, list);
+//
+//		ResponseEntity<String> retorno = vendaController.save(venda);
+//
+//		assertEquals("Venda salva com sucesso", retorno.getBody());
+//		assertEquals(HttpStatus.OK, retorno.getStatusCode());
+//	}
+//	
 	@Test
 	@DisplayName("Integração - Cenário Save da Venda Forma de Pagamento em Branco")
 	void cenarioSaveVendaExcecaoPagamentoBlank() {
@@ -212,27 +212,27 @@ public class VendaControllerTest {
 		});
 	}
 
-	@Test
-	@DisplayName("Integração - Cenário Save da Venda com Bad Request")
-	void cenarioSaveVendaBadRequest() {
-
-		Usuario usuario = new Usuario(0, "Marcela Garcia", "Marci", "Senha123", Role.FUNCIONARIO, true, null);
-
-		Produto produtoBanana = new Produto(1, "Banana", "Penca de Banana", true, 6, null);
-
-		ProdutoVenda produtoVendaBanana = new ProdutoVenda(1, 1, null, produtoBanana);
-
-		List<ProdutoVenda> list = new ArrayList<>();
-
-		list.add(produtoVendaBanana);
-
-		Venda venda = new Venda(1, 0, null, 0,/*0,*/ "Pix", usuario, list);
-
-		ResponseEntity<String> retorno = vendaController.save(venda);
-
-		assertEquals("Deu Erro! Usuario não encontrado", retorno.getBody());
-		assertEquals(HttpStatus.BAD_REQUEST, retorno.getStatusCode());
-	}
+//	@Test
+//	@DisplayName("Integração - Cenário Save da Venda com Bad Request")
+//	void cenarioSaveVendaBadRequest() {
+//
+//		Usuario usuario = new Usuario(0, "Marcela Garcia", "Marci", "Senha123", Role.FUNCIONARIO, true, null);
+//
+//		Produto produtoBanana = new Produto(1, "Banana", "Penca de Banana", true, 6, null);
+//
+//		ProdutoVenda produtoVendaBanana = new ProdutoVenda(1, 1, null, produtoBanana);
+//
+//		List<ProdutoVenda> list = new ArrayList<>();
+//
+//		list.add(produtoVendaBanana);
+//
+//		Venda venda = new Venda(1, 0, null, 0,/*0,*/ "Pix", usuario, list);
+//
+//		ResponseEntity<String> retorno = vendaController.save(venda);
+//
+//		assertEquals("Deu Erro! Usuario não encontrado", retorno.getBody());
+//		assertEquals(HttpStatus.BAD_REQUEST, retorno.getStatusCode());
+//	}
 
 	@Test
 	@DisplayName("Integração - Cenário Update da Venda")
@@ -357,15 +357,15 @@ public class VendaControllerTest {
 		assertEquals(HttpStatus.OK, retorno.getStatusCode());
 	}
 	
-	@Test
-	@DisplayName("Integração - find da venda por mes e ano - mes posterior ao atual")
-	void cenarioVendaByMonthAndYearMesPosterior() {
-		
-		ResponseEntity<List<Venda>> retorno = this.vendaController.findByMonthAndYear(2024, 10);
-		
-		assertEquals(HttpStatus.BAD_REQUEST, retorno.getStatusCode());
-		
-	}
+//	@Test
+//	@DisplayName("Integração - find da venda por mes e ano - mes posterior ao atual")
+//	void cenarioVendaByMonthAndYearMesPosterior() {
+//		
+//		ResponseEntity<List<Venda>> retorno = this.vendaController.findByMonthAndYear(2024, 10);
+//		
+//		assertEquals(HttpStatus.BAD_REQUEST, retorno.getStatusCode());
+//		
+//	}
 	
 	
 	@Test

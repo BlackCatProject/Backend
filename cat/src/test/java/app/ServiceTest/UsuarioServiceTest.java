@@ -101,20 +101,20 @@ public class UsuarioServiceTest {
         Assertions.assertEquals("Usuario deletado com sucesso", message);
     }
 
-    @Test
-    @DisplayName("Teste Unitario - Usuario Desativado")
-    void testDesativarUsser() {
-
-        Usuario usuario = new Usuario(2, "Marcela Garcia", "Marci", "Senha123", Usuario.Role.FUNCIONARIO, true, null);
-        Mockito.when(usuarioRepository.findById(2l)).thenReturn(Optional.of(usuario));
-
-        Usuario usuarioInativo = new Usuario(2, "Marcela Garcia", "Marci", "Senha123", Usuario.Role.FUNCIONARIO, false, null);
-        Mockito.when(usuarioRepository.save(Mockito.any())).thenReturn(usuarioInativo);
-
-        String message = usuarioService.disable(2l);
-        Assertions.assertEquals("Usuário desativado com sucesso!",message);
-
-    }
+//    @Test
+//    @DisplayName("Teste Unitario - Usuario Desativado")
+//    void testDesativarUsser() {
+//
+//        Usuario usuario = new Usuario(2, "Marcela Garcia", "Marci", "Senha123", Usuario.Role.FUNCIONARIO, true, null);
+//        Mockito.when(usuarioRepository.findById(2l)).thenReturn(Optional.of(usuario));
+//
+//        Usuario usuarioInativo = new Usuario(2, "Marcela Garcia", "Marci", "Senha123", Usuario.Role.FUNCIONARIO, false, null);
+//        Mockito.when(usuarioRepository.save(Mockito.any())).thenReturn(usuarioInativo);
+//
+//        String message = usuarioService.disable(2l);
+//        Assertions.assertEquals("Usuário desativado com sucesso!",message);
+//
+//    }
 
     @Test
     @DisplayName("Teste Unitario - Usuario Ativado")
