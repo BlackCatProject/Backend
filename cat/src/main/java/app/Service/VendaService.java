@@ -20,7 +20,6 @@ import org.springframework.stereotype.Service;
 import app.Entity.Produto;
 import app.Entity.ProdutoVenda;
 import app.auth.Usuario;
-import lombok.var;
 import app.Entity.Venda;
 import app.Repository.UsuarioRepository;
 import app.Repository.VendaRepository;
